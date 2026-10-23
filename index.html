@@ -1,1 +1,230 @@
-update public.products set status = 'approved' where name = 'Savon noir naturel';
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sunu Marché – vendre et acheter au Sénégal</title>
+<style>
+:root{--bg:#F6F7FB;--sf:#fff;--ink:#14162B;--mu:#5B607A;--in:#1F2A6B;--sun:#F4B400;--lf:#1E8E5A;--ln:#DADDEA;--oi:#fff}
+@media(prefers-color-scheme:dark){:root{--bg:#0E1022;--sf:#181B35;--ink:#F1F2FA;--mu:#A3A8C8;--in:#8E9BFF;--ln:#2B2F55;--oi:#0E1022}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{margin:0;line-height:1.15}
+header,main{max-width:960px;margin:auto;padding:0 16px}
+header{padding-top:24px}
+h1{font-size:clamp(2rem,8vw,3.2rem);font-weight:800}
+h1 span{background:linear-gradient(transparent 62%,var(--sun) 62%)}
+.m{color:var(--mu);font-size:.9rem}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);max-width:960px;margin:auto;padding:12px 16px;display:flex;gap:8px;overflow-x:auto}
+nav button{flex:none;border:2px solid var(--ln);background:var(--sf);color:var(--ink);font:700 15px inherit;padding:10px 16px;border-radius:999px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--in);border-color:var(--in);color:var(--oi)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--sf);border:2px solid var(--ln);border-radius:12px;padding:11px 12px;width:100%}
+label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-top:12px}
+.card,.panel{background:var(--sf);border:1px solid var(--ln);border-radius:18px;overflow:hidden}
+.panel{padding:18px;max-width:560px;margin-bottom:16px}
+.pic{height:110px;display:grid;place-items:center;font-size:3.2rem;background:var(--ln)}
+.bd{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:8px}
+.price{font-weight:800;font-size:1.15rem;color:var(--lf)}
+.btn{border:0;background:var(--sun);color:#14162B;font:700 15px inherit;padding:10px 16px;border-radius:12px;cursor:pointer}
+.btn.g{background:var(--lf);color:#fff}.btn.o{background:transparent;border:2px solid var(--ln);color:var(--ink)}
+.ln{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--ln)}.ln b{display:block}
+.ln button{width:30px;height:30px;border-radius:8px;border:2px solid var(--ln);background:var(--sf);color:var(--ink);font-weight:700}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:1.25rem;padding:14px 0}
+.ok{background:var(--lf);color:#fff;border-radius:14px;padding:14px;margin-top:12px}
+.st{font-size:.8rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--ln)}
+.pl{display:grid;gap:8px;margin:8px 0}.pl div{border:1px solid var(--ln);border-radius:12px;padding:10px}
+</style>
+<style>.ln .btn{width:auto;height:auto;padding:10px 16px;border:0;border-radius:12px}</style>
+</head>
+<body>
+<header>
+<h1>Sunu <span>Marché</span></h1>
+<p class="m">Vends et achète au Sénégal. Paiement par Wave, Orange Money ou à la livraison.</p>
+</header>
+<nav>
+<button data-t="buy" aria-selected="true">Acheter</button>
+<button data-t="sell" aria-selected="false">Vendre</button>
+<button data-t="cart" aria-selected="false">Panier (<span id="cc">0</span>)</button>
+</nav>
+<main>
+
+<section id="buy">
+<input id="q" type="search" placeholder="Chercher un produit…" aria-label="Chercher">
+<div class="grid" id="grid"></div>
+</section>
+
+<section id="sell" hidden>
+<div class="panel" id="s-auth">
+<h2>Espace vendeur</h2>
+<p class="m">Crée un compte gratuit pour proposer tes produits.</p>
+<label for="em">E-mail</label><input id="em" type="email" autocomplete="email">
+<label for="pw">Mot de passe (8 caractères minimum)</label><input id="pw" type="password" autocomplete="current-password">
+<p class="m" id="am" role="alert"></p>
+<button class="btn g" id="si">Me connecter</button> <button class="btn o" id="su">Créer un compte</button>
+<h3 style="margin-top:20px">Abonnements</h3>
+<div class="pl">
+<div><b>Starter</b> · 2 500 F/mois : tu gères stock et livraison, fournisseurs locaux, 25 produits.</div>
+<div><b>Pro</b> · 5 000 F/mois : local et international, produits illimités.</div>
+<div><b>Premium</b> · 9 000 F/mois : dropshipping, sans stock.</div>
+</div>
+<p class="m">Après inscription, écris-nous sur WhatsApp pour activer ton abonnement.</p>
+</div>
+
+<div class="panel" id="s-prof" hidden>
+<h2>Ma boutique</h2>
+<label for="shn">Nom de la boutique</label><input id="shn">
+<label for="swa">Numéro WhatsApp</label><input id="swa" type="tel" placeholder="77 000 00 00">
+<label for="sct">Ville</label><input id="sct">
+<p class="m" id="pm" role="alert"></p>
+<button class="btn g" id="ps">Enregistrer</button>
+</div>
+
+<div id="s-dash" hidden>
+<div class="panel">
+<h2 id="dt"></h2>
+<p class="m">Chaque produit est vérifié avant d’être publié.</p>
+<label for="pnm">Nom du produit</label><input id="pnm">
+<label for="pct">Catégorie</label>
+<select id="pct"><option>Mode</option><option>Beauté</option><option>Alimentation</option><option>Artisanat</option><option>Tech</option><option>Services</option></select>
+<label for="ppx">Prix en FCFA</label><input id="ppx" type="number" min="0" inputmode="numeric">
+<label for="pds">Description</label><textarea id="pds" rows="3"></textarea>
+<label for="pem">Image</label>
+<select id="pem"><option>🎁</option><option>👗</option><option>👜</option><option>👟</option><option>🧴</option><option>🧃</option><option>🍯</option><option>🎨</option><option>📱</option><option>🎧</option><option>💍</option><option>📚</option></select>
+<p class="m" id="dm" role="alert"></p>
+<button class="btn g" id="pa">Envoyer pour validation</button>
+</div>
+<div class="panel">
+<h2>Vendre sans stock</h2>
+<div id="dropbody" class="m"></div>
+</div>
+<h3>Mes produits</h3>
+<div id="mine" class="m"></div>
+<p><button class="btn o" id="so">Me déconnecter</button></p>
+</div>
+</section>
+
+<section id="cart" hidden>
+<div class="panel">
+<h2>Ton panier</h2>
+<div id="lines"></div>
+<div id="co" hidden>
+<div class="tot"><span>Total</span><span id="tot"></span></div>
+<label for="bn">Ton nom</label><input id="bn">
+<label for="bp">Téléphone</label><input id="bp" type="tel">
+<label for="ba">Adresse de livraison</label><input id="ba">
+<label for="pay">Paiement</label>
+<select id="pay"><option>Wave</option><option>Orange Money</option><option>Paiement à la livraison</option></select>
+<p class="m" id="cm" role="alert"></p>
+<button class="btn g" id="go">Commander</button>
+</div>
+<div id="done"></div>
+</div>
+</section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var SB_URL="https://odmkeeiwlaetrikmyhbk.supabase.co",SB_KEY="sb_publishable_jWB5zwgGyI96zLaJ1RmG2Q_UmOxmuo6";
+var WA="221781498148",WAVE="78 149 81 48",OM="78 149 81 48";
+var db=supabase.createClient(SB_URL,SB_KEY),$=function(i){return document.getElementById(i)};
+var items=[],cart={},user=null,prof=null,supp=[];
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fc(n){return Number(n).toLocaleString("fr-FR")+" FCFA"}
+function msg(id,t,ok){var e=$(id);e.textContent=t;e.style.color=ok?"var(--lf)":"#C0392B"}
+function show(t){["buy","sell","cart"].forEach(function(s){$(s).hidden=s!==t});
+document.querySelectorAll("nav button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===t)})}
+document.querySelector("nav").onclick=function(e){var b=e.target.closest("button");if(b)show(b.dataset.t)};
+
+async function load(){
+var r=await db.from("products").select("*").eq("status","approved").order("created_at",{ascending:false});
+if(r.error){$("grid").textContent="Chargement impossible. Réessaie plus tard.";return}
+items=r.data||[];render();drawCart()}
+function render(){
+var q=$("q").value.toLowerCase();
+var l=items.filter(function(x){return(x.name+" "+(x.description||"")+" "+x.category).toLowerCase().indexOf(q)>-1});
+$("grid").innerHTML=l.length?l.map(function(x){return`<article class="card"><div class="pic">${esc(x.emoji||"🎁")}</div><div class="bd"><h3>${esc(x.name)}</h3><div class="m">${esc(x.category)}</div><div class="m">${esc(x.description)}</div><div class="row"><span class="price">${fc(x.price)}</span><button class="btn" data-add="${x.id}">Ajouter</button></div></div></article>`}).join(""):`<p class="m">Aucun produit pour l’instant. Reviens bientôt ou vends le tien !</p>`}
+$("q").oninput=render;
+$("grid").onclick=function(e){var b=e.target.closest("[data-add]");if(!b)return;var id=b.dataset.add;cart[id]=(cart[id]||0)+1;b.textContent="Ajouté ✓";setTimeout(function(){b.textContent="Ajouter"},900);drawCart()};
+
+function drawCart(){
+var ids=Object.keys(cart),n=0,t=0;
+$("lines").innerHTML=ids.length?ids.map(function(id){var x=items.find(function(i){return i.id==id});if(!x){delete cart[id];return""}
+n+=cart[id];t+=x.price*cart[id];
+return`<div class="ln"><div><b>${esc(x.emoji||"")} ${esc(x.name)}</b><span class="m">${fc(x.price)}</span></div><div><button data-m="${id}">−</button> ${cart[id]} <button data-p="${id}">+</button></div></div>`}).join(""):`<p class="m">Ton panier est vide.</p>`;
+$("cc").textContent=n;$("tot").textContent=fc(t);$("co").hidden=!n}
+$("lines").onclick=function(e){var b=e.target.closest("button");if(!b)return;var id=b.dataset.m||b.dataset.p;cart[id]+=b.dataset.p?1:-1;if(cart[id]<1)delete cart[id];drawCart()};
+
+$("go").onclick=async function(){
+var nm=$("bn").value.trim(),ph=$("bp").value.trim(),ad=$("ba").value.trim();
+if(!nm||!ph||!ad)return msg("cm","Remplis ton nom, ton téléphone et ton adresse.");
+var ids=Object.keys(cart),t=0,its=[],lt=[];
+ids.forEach(function(id){var x=items.find(function(i){return i.id==id});t+=x.price*cart[id];its.push({id:x.id,name:x.name,qty:cart[id],price:x.price});lt.push(cart[id]+" × "+x.name)});
+var pay=$("pay").value;this.disabled=true;
+var r=await db.from("orders").insert({buyer_name:nm,buyer_phone:ph,address:ad,payment:pay,items:its,total:t});
+this.disabled=false;
+if(r.error)return msg("cm","Commande impossible. Réessaie dans un instant.");
+msg("cm","");
+var m="Bonjour Sunu Marché, je viens de commander : "+lt.join(", ")+". Total : "+fc(t)+". Livraison : "+ad+". Paiement : "+pay+". Nom : "+nm+", tél : "+ph;
+var num=pay==="Wave"?WAVE:OM;
+$("done").innerHTML=`<div class="ok"><b>Commande enregistrée, merci ${esc(nm)} !</b><br>${pay==="Paiement à la livraison"?"Tu paieras à la réception.":"Envoie "+fc(t)+" par "+esc(pay)+" au "+esc(num)+"."} Puis confirme sur WhatsApp.</div><p><a class="btn g" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(m)}">Confirmer sur WhatsApp</a></p>`;
+cart={};drawCart()};
+
+async function refresh(){
+var s=await db.auth.getSession();user=s.data.session?s.data.session.user:null;prof=null;
+if(user){var p=await db.from("profiles").select("*").eq("id",user.id).maybeSingle();prof=p.data}
+$("s-auth").hidden=!!user;$("s-prof").hidden=!user||!!prof;$("s-dash").hidden=!user||!prof;
+if(user&&prof){$("dt").textContent="Bienvenue, "+prof.shop_name;myProducts();loadDrop()}}
+$("su").onclick=async function(){
+var r=await db.auth.signUp({email:$("em").value.trim(),password:$("pw").value});
+if(r.error)return msg("am","Création impossible : "+r.error.message);
+if(!r.data.session)msg("am","Compte créé. Vérifie ton e-mail pour confirmer, puis connecte-toi.",1);else refresh()};
+$("si").onclick=async function(){
+var r=await db.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});
+if(r.error)return msg("am","E-mail ou mot de passe incorrect, ou e-mail pas encore confirmé.");
+msg("am","");refresh()};
+$("so").onclick=async function(){await db.auth.signOut();refresh()};
+$("ps").onclick=async function(){
+var w=$("swa").value.replace(/\D/g,""),n=$("shn").value.trim();if(w.length===9)w="221"+w;
+if(!n||w.length<11)return msg("pm","Nom de boutique et numéro WhatsApp requis.");
+var r=await db.from("profiles").upsert({id:user.id,shop_name:n,whatsapp:w,city:$("sct").value.trim()});
+if(r.error)return msg("pm","Enregistrement impossible. Réessaie.");
+msg("pm","");refresh()};
+$("pa").onclick=async function(){
+var p=Number($("ppx").value),n=$("pnm").value.trim();
+if(!n||!(p>0))return msg("dm","Nom et prix requis.");
+var r=await db.from("products").insert({seller_id:user.id,name:n,category:$("pct").value,price:p,description:$("pds").value.trim(),emoji:$("pem").value});
+if(r.error)return msg("dm","Envoi impossible. Réessaie.");
+["pnm","ppx","pds"].forEach(function(i){$(i).value=""});
+msg("dm","Envoyé ! Ton produit sera visible après validation.",1);myProducts()};
+
+async function loadDrop(){
+var s=await db.from("subscriptions").select("*").eq("user_id",user.id).maybeSingle();
+var ok=s.data&&s.data.plan==="premium"&&new Date(s.data.expires_at)>new Date();
+if(!ok){$("dropbody").textContent="Réservé à l’abonnement Premium (9 000 F/mois). Écris-nous sur WhatsApp pour l’activer.";return}
+var r=await db.from("supplier_products").select("*").eq("active",true).order("created_at",{ascending:false});
+supp=r.data||[];
+$("dropbody").innerHTML=supp.length?supp.map(function(x){var sg=Math.round(x.cost*1.4/100)*100;
+return`<div class="ln" style="display:block"><b>${esc(x.emoji)} ${esc(x.name)}</b><span class="m">${x.supplier_type==="local"?"Local":"International"} · ${esc(x.supplier_name)} · Livraison ${esc(x.delivery_days||"?")}<br>Prix fournisseur : ${fc(x.cost)}</span><label for="dp${x.id}">Ton prix de vente</label><input id="dp${x.id}" type="number" inputmode="numeric" value="${sg}"><p><button class="btn g" data-ds="${x.id}">Vendre ce produit</button></p></div>`}).join(""):"Aucun produit fournisseur pour l’instant."}
+$("dropbody").onclick=async function(e){
+var b=e.target.closest("[data-ds]");if(!b)return;
+var x=supp.find(function(i){return i.id==b.dataset.ds}),p=Number($("dp"+x.id).value);
+if(!(p>x.cost)){b.textContent="Prix trop bas";setTimeout(function(){b.textContent="Vendre ce produit"},1500);return}
+b.disabled=true;
+var r=await db.from("products").insert({seller_id:user.id,name:x.name,category:x.category,price:p,description:"Livraison : "+(x.delivery_days||"")+" ("+(x.supplier_type==="local"?"local":"international")+")",emoji:x.emoji,kind:"dropship",supplier_type:x.supplier_type,supplier_price:x.cost});
+b.disabled=false;b.textContent=r.error?"Envoi impossible":"Envoyé pour validation ✓";
+if(!r.error)myProducts()};
+
+async function myProducts(){
+var r=await db.from("products").select("*").eq("seller_id",user.id).order("created_at",{ascending:false});
+var L={pending:"En attente",approved:"Publié",rejected:"Refusé"};
+$("mine").innerHTML=(r.data&&r.data.length)?r.data.map(function(x){return`<div class="ln"><div><b>${esc(x.emoji)} ${esc(x.name)}</b><span class="m">${fc(x.price)}</span></div><span class="st">${L[x.status]||esc(x.status)}</span></div>`}).join(""):"Aucun produit pour l’instant.";
+if(r.data&&r.data.some(function(x){return x.status==="approved"}))load()}
+
+db.auth.onAuthStateChange(function(){refresh()});
+load();refresh();
+</script>
+</body>
+</html>
+
