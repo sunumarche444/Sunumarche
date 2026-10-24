@@ -105,3 +105,17 @@ init();
 </body>
 </html>
 <style>.pic{overflow:hidden}.pic img{height:200px}</style>
+<script>
+(function(){
+var t=setInterval(function(){
+if(typeof store==="undefined"||!store)return;
+clearInterval(t);
+if(!store.logo_url)return;
+var d=document.querySelector("header div"),i=document.createElement("img");
+i.src=store.logo_url;i.alt=store.name;
+i.style.cssText="width:72px;height:72px;border-radius:50%;object-fit:cover;background:#fff;margin-bottom:12px;display:block";
+d.insertBefore(i,d.firstChild);
+},300);
+setTimeout(function(){clearInterval(t)},10000);
+})();
+</script>
