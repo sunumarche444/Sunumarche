@@ -351,5 +351,23 @@ d.insertBefore(i,d.firstChild);
 setTimeout(function(){clearInterval(t)},10000);
 })();
 </script>
+<script>
+(function(){
+var ref=document.getElementById("stk");
+var w=document.createElement("div");
+w.innerHTML='<h3 style="margin-top:20px">Alertes Telegram</h3><p class="m">Reçois chaque commande de ta boutique sur Telegram. 1) Ouvre <b>@sunumarche_alertes_bot</b> et appuie sur Démarrer. 2) Ouvre <b>@userinfobot</b> pour connaître ton Id. 3) Écris-le ci-dessous.</p><label for="tgid">Mon Id Telegram</label><input id="tgid" inputmode="numeric" placeholder="123456789"><p class="m" id="tgm" role="alert"></p><button class="btn g" id="tgs">Activer mes alertes</button>';
+ref.parentNode.insertBefore(w,ref.nextSibling);
+document.getElementById("tgs").onclick=async function(){
+var v=document.getElementById("tgid").value.trim();
+if(v&&!/^[0-9]{5,15}$/.test(v))return msg("tgm","L’Id ne contient que des chiffres.");
+var r=await db.from("store_private").upsert({id:user.id,telegram_chat_id:v||null});
+if(r.error)return msg("tgm",r.error.code==="23503"?"Enregistre d’abord ta boutique ci-dessus.":"Enregistrement impossible.");
+msg("tgm",v?"Alertes activées ! Tu recevras tes commandes sur Telegram.":"Alertes désactivées.",1)};
+var old=refresh;
+refresh=async function(){await old();
+if(user&&prof){var r=await db.from("store_private").select("telegram_chat_id").eq("id",user.id).maybeSingle();
+document.getElementById("tgid").value=(r.data&&r.data.telegram_chat_id)||""}};
+})();
+</script>
 
 
