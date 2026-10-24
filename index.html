@@ -249,4 +249,28 @@ load();refresh();
 </script>
 </body>
 </html><style>.pic{height:220px}.pic img{object-fit:contain}</style>
+<script>
+(function(){
+var host=document.createElement("div");host.className="panel";
+host.innerHTML='<h2>Ma boutique en ligne</h2><p class="m">Ta page à partager avec tes clients.</p><label for="stn">Nom de la boutique</label><input id="stn"><label for="stl">Nom court du lien (lettres, chiffres, tirets)</label><input id="stl" placeholder="awa-creations"><label for="stg">Phrase d’accroche</label><input id="stg" placeholder="Mode wax faite main à Dakar"><label for="stc">Couleur</label><input id="stc" type="color" value="#1F2A6B"><p class="m" id="stm" role="alert"></p><button class="btn g" id="sts">Enregistrer ma boutique</button><p id="stk" class="m"></p>';
+var dash=document.getElementById("s-dash");dash.insertBefore(host,dash.firstChild);
+async function loadStore(){
+var r=await db.from("stores").select("*").eq("id",user.id).maybeSingle(),s=r.data;
+document.getElementById("stn").value=s?s.name:prof.shop_name;
+document.getElementById("stl").value=s?s.slug:"";
+document.getElementById("stg").value=(s&&s.tagline)||"";
+document.getElementById("stc").value=s?s.color:"#1F2A6B";
+var l=s?location.origin+"/boutique.html?b="+s.slug:"";
+document.getElementById("stk").innerHTML=s?'Ton lien : <a href="'+esc(l)+'" target="_blank" rel="noopener">'+esc(l)+'</a>':"Tu n’as pas encore de lien.";}
+document.getElementById("sts").onclick=async function(){
+var n=document.getElementById("stn").value.trim();
+var sl=document.getElementById("stl").value.trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"");
+if(!n||sl.length<3||sl.length>30)return msg("stm","Nom requis et lien de 3 à 30 caractères.");
+var r=await db.from("stores").upsert({id:user.id,slug:sl,name:n,tagline:document.getElementById("stg").value.trim(),color:document.getElementById("stc").value,city:prof.city});
+if(r.error)return msg("stm",r.error.code==="23505"?"Ce nom de lien est déjà pris.":"Enregistrement impossible.");
+msg("stm","Boutique enregistrée !",1);loadStore()};
+var old=refresh;
+refresh=async function(){await old();if(user&&prof)loadStore()};
+})();
+</script>
 
