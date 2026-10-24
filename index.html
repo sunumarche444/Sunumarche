@@ -273,5 +273,37 @@ var old=refresh;
 refresh=async function(){await old();if(user&&prof)loadStore()};
 })();
 </script>
-<style>.pic{height:240px}.pic img{height:100%;object-fit:contain}</style>
+<style>.pic{height:240px}.pic img{height:100%;object-fit:contain}</style><script>
+(function(){
+var c=document.getElementById("stc"),w=document.createElement("div");
+w.innerHTML='<label for="stlg">Logo (facultatif)</label><input id="stlg" type="file" accept="image/*">';
+c.parentNode.insertBefore(w,c.nextSibling);
+function small(f){return new Promise(function(ok,ko){var i=new Image(),u=URL.createObjectURL(f);
+i.onload=function(){var s=Math.min(1,300/Math.max(i.width,i.height)),k=document.createElement("canvas");
+k.width=Math.round(i.width*s);k.height=Math.round(i.height*s);
+k.getContext("2d").drawImage(i,0,0,k.width,k.height);URL.revokeObjectURL(u);
+k.toBlob(function(b){b?ok(b):ko()},"image/jpeg",.85)};
+i.onerror=function(){ko()};i.src=u})}
+document.getElementById("sts").onclick=async function(){
+var btn=this,n=document.getElementById("stn").value.trim();
+var sl=document.getElementById("stl").value.trim().toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"");
+if(!n||sl.length<3||sl.length>30)return msg("stm","Nom requis et lien de 3 à 30 caractères.");
+var f=document.getElementById("stlg").files[0],logo=null;
+btn.disabled=true;
+if(f){try{
+var b=await small(f),p=user.id+"/logo-"+Date.now()+".jpg";
+var up=await db.storage.from("product-images").upload(p,b,{contentType:"image/jpeg"});
+if(up.error)throw 0;
+logo=db.storage.from("product-images").getPublicUrl(p).data.publicUrl
+}catch(e){btn.disabled=false;return msg("stm","Logo impossible à envoyer. Essaie une autre image.")}}
+var row={id:user.id,slug:sl,name:n,tagline:document.getElementById("stg").value.trim(),color:document.getElementById("stc").value,city:prof.city};
+if(logo)row.logo_url=logo;
+var r=await db.from("stores").upsert(row);
+btn.disabled=false;
+if(r.error)return msg("stm",r.error.code==="23505"?"Ce nom de lien est déjà pris.":"Enregistrement impossible.");
+document.getElementById("stlg").value="";
+msg("stm","Boutique enregistrée !",1);refresh()};
+})();
+</script>
+
 
