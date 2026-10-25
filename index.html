@@ -369,5 +369,26 @@ if(user&&prof){var r=await db.from("store_private").select("telegram_chat_id").e
 document.getElementById("tgid").value=(r.data&&r.data.telegram_chat_id)||""}};
 })();
 </script>
+<script>
+(function(){
+var info=document.createElement("p");info.className="m";info.id="plinfo";
+var dt=document.getElementById("dt");dt.parentNode.insertBefore(info,dt.nextSibling);
+var LIM={free:3,starter:25,pro:100000,premium:100000},NOM={free:"Gratuit",starter:"Starter",pro:"Pro",premium:"Premium"};
+var cur={plan:"free",n:0,lim:3};
+async function upd(){
+if(!user)return;
+var s=await db.from("subscriptions").select("plan,expires_at").eq("user_id",user.id).maybeSingle();
+var plan=(s.data&&new Date(s.data.expires_at)>new Date())?s.data.plan:"free";
+var c=await db.from("products").select("id",{count:"exact",head:true}).eq("seller_id",user.id).neq("status","rejected");
+cur={plan:plan,n:c.count||0,lim:LIM[plan]||3};
+info.textContent="Abonnement : "+NOM[plan]+" · Produits : "+cur.n+(cur.lim>=100000?" (illimités)":" / "+cur.lim)}
+var om=msg;
+msg=function(id,t,ok){
+if(id==="dm"&&!ok&&/Envoi impossible/.test(t)&&cur.n>=cur.lim)t="Limite atteinte ("+cur.lim+" produits) avec l’abonnement "+NOM[cur.plan]+". Pour en ajouter, passe à un abonnement supérieur : écris-nous sur WhatsApp.";
+om(id,t,ok)};
+var om2=myProducts;
+myProducts=async function(){await om2();upd()};
+})();
+</script>
 
 
