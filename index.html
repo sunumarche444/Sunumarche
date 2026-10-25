@@ -390,5 +390,23 @@ var om2=myProducts;
 myProducts=async function(){await om2();upd()};
 })();
 </script>
+<script>
+(function(){
+var d=document.querySelectorAll("#stlg");
+if(d.length>1)d[1].parentNode.remove();
+var stk=document.getElementById("stk"),w=document.createElement("div");
+w.innerHTML='<button class="btn g" id="shw" type="button">Partager sur WhatsApp</button> <button class="btn o" id="shc" type="button">Copier le lien</button><p class="m" id="shm" role="alert"></p>';
+stk.parentNode.insertBefore(w,stk.nextSibling);
+function lien(){var a=document.querySelector("#stk a");return a?a.href:""}
+document.getElementById("shw").onclick=function(){
+var l=lien();if(!l)return msg("shm","Enregistre d’abord ta boutique pour avoir un lien.");
+var n=document.getElementById("stn").value.trim()||"ma boutique";
+var t="Découvre "+n+" sur Sunu Marché : "+l;
+window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank")};
+document.getElementById("shc").onclick=async function(){
+var l=lien();if(!l)return msg("shm","Enregistre d’abord ta boutique pour avoir un lien.");
+try{await navigator.clipboard.writeText(l);msg("shm","Lien copié !",1)}catch(e){msg("shm","Copie impossible. Appuie longuement sur le lien pour le copier.")}};
+})();
+</script>
 
 
