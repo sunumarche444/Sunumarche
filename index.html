@@ -437,3 +437,39 @@ refresh=async function(){await old();if(user&&prof)loadOrders()};
 
 <p style="text-align:center;padding:16px"><a href="/conditions.html">Conditions de vente</a></p>
 <script>if(location.hash==="#vendre")show("sell")</script>
+<script>
+(function(){
+function slugify(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,20).replace(/-+$/,"")||"boutique"}
+async function ensureStore(){
+var r=await db.from("stores").select("id").eq("id",user.id).maybeSingle();
+if(r.data)return true;
+var slug=slugify(prof.shop_name)+"-"+user.id.slice(0,4);
+var i=await db.from("stores").insert({id:user.id,slug:slug,name:prof.shop_name,tagline:"Bienvenue dans ma boutique",color:"#1F2A6B",city:prof.city});
+return !i.error}
+var host=document.getElementById("stn").closest(".panel");
+var box=document.createElement("div");
+box.style.cssText="background:var(--ln);border-radius:14px;padding:14px;margin:12px 0;display:none";
+box.innerHTML='<b>Boutique en un clic</b><p class="m" style="margin:4px 0 10px">On crée ta boutique et ton lien tout de suite. Tu pourras tout modifier ensuite.</p><button class="btn g" id="oc" type="button">Créer ma boutique maintenant</button>';
+host.insertBefore(box,document.querySelector("label[for=stn]"));
+async function toggle(){
+if(!user||!prof)return;
+var r=await db.from("stores").select("id").eq("id",user.id).maybeSingle();
+box.style.display=r.data?"none":"block"}
+document.getElementById("oc").onclick=async function(){
+this.disabled=true;var ok=await ensureStore();this.disabled=false;
+if(!ok)return msg("stm","Création impossible. Réessaie.");
+msg("stm","Boutique créée ! Ton lien est ci-dessous.",1);refresh()};
+document.getElementById("dropbody").onclick=async function(e){
+var b=e.target.closest("[data-ds]");if(!b)return;
+var x=supp.find(function(i){return i.id==b.dataset.ds}),p=Number(document.getElementById("dp"+x.id).value);
+if(!(p>x.cost)){b.textContent="Prix trop bas";setTimeout(function(){b.textContent="Vendre ce produit"},1500);return}
+b.disabled=true;
+var ok=await ensureStore();
+if(!ok){b.disabled=false;b.textContent="Boutique impossible à créer";return}
+var r=await db.from("products").insert({seller_id:user.id,name:x.name,category:x.category,price:p,description:"Livraison : "+(x.delivery_days||"")+" ("+(x.supplier_type==="local"?"local":"international")+")",emoji:x.emoji,kind:"dropship",supplier_type:x.supplier_type,supplier_price:x.cost});
+b.disabled=false;b.textContent=r.error?"Envoi impossible":"Ajouté à ta boutique ✓";
+if(!r.error){myProducts();refresh()}};
+var old=refresh;
+refresh=async function(){await old();toggle()};
+})();
+</script>
