@@ -611,3 +611,29 @@ var old=refresh;
 refresh=async function(){await old();if(user&&prof&&!cat.length)loadCat()};
 })();
 </script>
+<script>
+(function(){
+var g=document.getElementById("aug");if(!g)return;
+var N={
+"Maison":{i:"un article pratique pour rendre ton quotidien plus simple et plus confortable",t:["La maison qui te ressemble","Du confort et du pratique chez toi"],p:["Pratique et facile à utiliser au quotidien","Solide et pensé pour durer","Livraison rapide et paiement facile"],h:"#maison #senegal #pratique"},
+"Auto":{i:"un accessoire fiable pour ta voiture ou ta moto",t:["Roule l’esprit tranquille","L’essentiel pour ta voiture"],p:["Fiable et facile à installer ou à utiliser","Pensé pour un usage de tous les jours","Livraison rapide et paiement facile"],h:"#auto #voiture #senegal"},
+"Santé":{i:"un produit de bien-être et de confort pour ton quotidien",t:["Le bien-être à portée de main","Prends soin de toi au quotidien"],p:["Pratique et agréable à utiliser","Un geste simple pour ton confort","Livraison rapide et paiement facile"],h:"#bienetre #confort #senegal"},
+"Enfants":{i:"un article pensé pour les enfants, amusant et pratique",t:["Pour le bonheur des petits","Tout pour tes enfants"],p:["Pensé pour les enfants, simple à utiliser","Coloré et agréable au quotidien","Livraison rapide et paiement facile"],h:"#enfants #famille #senegal"},
+"Sport":{i:"un article pour bouger plus et rester en forme",t:["Bouge, c’est la forme !","L’équipement qu’il te faut"],p:["Pratique pour tes séances et tes sorties","Confortable et résistant","Livraison rapide et paiement facile"],h:"#sport #fitness #senegal"}
+};
+["pct","auc"].forEach(function(id){var s=document.getElementById(id);if(!s)return;
+Object.keys(N).forEach(function(k){if(![].some.call(s.options,function(o){return o.value===k||o.text===k})){var o=document.createElement("option");o.textContent=k;s.appendChild(o)}})});
+var og=g.onclick;
+g.onclick=async function(){
+await og.call(this);
+var own=document.getElementById("aus").value==="own",c,name;
+if(own){c=document.getElementById("auc").value;name=document.getElementById("aun").value.trim()}
+else{var r=await db.from("supplier_products").select("name,category").eq("id",document.getElementById("aus").value).maybeSingle();if(!r.data)return;c=r.data.category;name=r.data.name}
+var k=N[c];if(!k||!name)return;
+var price=Number(document.getElementById("aup").value),m=/Commande ici 👉 (\S+)/.exec(document.getElementById("aux").value),lien=m?m[1]:"{LIEN}";
+var a=k.t[name.length%k.t.length];
+document.getElementById("aut").value=a;
+document.getElementById("aud").value=name+" : "+k.i+". "+k.p.join(" · ")+".";
+document.getElementById("aux").value="✨ "+name+" — "+fc(price)+"\n"+a+"\n✅ "+k.p[0]+"\n✅ "+k.p[1]+"\nCommande ici 👉 "+lien+"\n"+k.h};
+})();
+</script>
