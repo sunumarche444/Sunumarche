@@ -542,3 +542,72 @@ b.parentNode.firstElementChild.appendChild(d)})}
 new MutationObserver(add).observe(l,{childList:true});add();
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("auto"))return;
+var CAT={
+"Mode":{c:"#7A1F5C",i:"une pièce élégante pour affirmer ton style au quotidien",t:["Le style qui te ressemble","Des tenues qui font tourner les têtes"],p:["Belle finition et tissu agréable à porter","Une allure unique pour toutes les occasions","Livraison rapide et paiement facile"],h:"#mode #senegal #style"},
+"Beauté":{c:"#B83280",i:"un soin pensé pour prendre soin de toi, jour après jour",t:["Prends soin de toi, naturellement","La beauté simple et accessible"],p:["Texture agréable et résultats visibles","Un geste simple dans ta routine","Livraison rapide et paiement facile"],h:"#beaute #senegal #soin"},
+"Alimentation":{c:"#C2410C",i:"un produit savoureux et de qualité, pour régaler toute la famille",t:["Le goût d’ici, livré chez toi","Savoureux, frais et local"],p:["Saveur authentique et ingrédients choisis","Idéal à partager en famille","Livraison rapide et paiement facile"],h:"#gourmand #senegal #local"},
+"Artisanat":{c:"#8A5A2B",i:"une création soignée, faite avec savoir-faire",t:["Fait main avec passion","L’artisanat d’ici, pièce par pièce"],p:["Chaque pièce est travaillée avec soin","Un style unique, loin de la grande série","Livraison rapide et paiement facile"],h:"#artisanat #faitmain #senegal"},
+"Tech":{c:"#1F2A6B",i:"un produit pratique et fiable pour simplifier ton quotidien",t:["La tech utile, au bon prix","Simplifie ton quotidien"],p:["Facile à utiliser dès le premier jour","Pratique et fiable au quotidien","Livraison rapide et paiement facile"],h:"#tech #senegal #pratique"},
+"Services":{c:"#0F766E",i:"un service sérieux et rapide, adapté à tes besoins",t:["Un service pro, simple et rapide","Ton projet entre de bonnes mains"],p:["Travail soigné et délais respectés","Un suivi simple par WhatsApp","Paiement facile par Wave ou Orange Money"],h:"#service #senegal #pro"}
+};
+var cat=[],lien=null,cur=null;
+var host=document.getElementById("dt").closest(".panel");
+var p=document.createElement("div");p.className="panel";p.id="auto";p.style.maxWidth="none";
+p.innerHTML='<h2>Boutique automatique</h2><p class="m">Choisis un produit : on prépare tes textes et ta boutique en un clic. Tu pourras tout modifier.</p><label for="aus">Produit</label><select id="aus"></select><div id="auown" hidden><label for="aun">Nom du produit</label><input id="aun"><label for="auc">Catégorie</label><select id="auc">'+Object.keys(CAT).map(function(k){return "<option>"+k+"</option>"}).join("")+'</select></div><label for="aup">Ton prix de vente (FCFA)</label><input id="aup" type="number" inputmode="numeric"><p class="m" id="aum" role="alert"></p><button class="btn g" id="aug" type="button">Préparer mes textes</button><div id="aur" hidden style="margin-top:14px"><label for="aut">Phrase d’accroche de ta boutique</label><input id="aut"><label for="aud">Description du produit</label><textarea id="aud" rows="5"></textarea><label for="aux">Texte à partager (WhatsApp, TikTok, Instagram)</label><textarea id="aux" rows="6"></textarea><p><button class="btn g" id="aub" type="button">Publier dans ma boutique</button> <button class="btn o" id="auk" type="button">Copier le texte</button></p></div>';
+host.parentNode.insertBefore(p,host);
+function slugify(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,20).replace(/-+$/,"")||"boutique"}
+function pick(a,s){return a[s.length%a.length]}
+function sync(){
+var own=$("aus").value==="own";
+$("auown").hidden=!own;
+if(!own){var x=cat.find(function(i){return i.id==$("aus").value});if(x)$("aup").value=Math.round(x.cost*1.4/100)*100}
+else $("aup").value=""}
+function fill(){
+$("aus").innerHTML=cat.map(function(x){return '<option value="'+esc(x.id)+'">'+esc(x.emoji||"")+" "+esc(x.name)+" (prix fournisseur "+fc(x.cost)+")</option>"}).join("")+'<option value="own">Mon propre produit</option>';
+sync()}
+async function loadCat(){
+var r=await db.from("supplier_products").select("*").eq("active",true).order("created_at",{ascending:false});
+cat=r.data||[];fill()}
+$("aus").onchange=sync;
+$("aug").onclick=async function(){
+var own=$("aus").value==="own",x=null,name,c,price=Number($("aup").value);
+if(own){name=$("aun").value.trim();c=$("auc").value}
+else{x=cat.find(function(i){return i.id==$("aus").value});if(!x)return msg("aum","Choisis un produit.");name=x.name;c=x.category}
+if(!name)return msg("aum","Écris le nom du produit.");
+if(!(price>0)||(x&&price<=x.cost))return msg("aum",x?"Ton prix doit dépasser le prix fournisseur ("+fc(x.cost)+").":"Écris ton prix de vente.");
+msg("aum","");
+var k=CAT[c]||CAT["Mode"];
+var s=await db.from("stores").select("slug").eq("id",user.id).maybeSingle();
+lien=s.data?location.origin+"/boutique.html?b="+s.data.slug:null;
+cur={x:x,name:name,c:c,price:price,k:k};
+$("aut").value=pick(k.t,name);
+$("aud").value=name+" : "+k.i+". "+k.p.join(" · ")+".";
+$("aux").value="✨ "+name+" — "+fc(price)+"\n"+pick(k.t,name)+"\n✅ "+k.p[0]+"\n✅ "+k.p[1]+"\nCommande ici 👉 "+(lien||"{LIEN}")+"\n"+k.h;
+$("aur").hidden=false};
+$("aub").onclick=async function(){
+if(!cur)return;
+var b=this;b.disabled=true;
+var tag=$("aut").value.trim().slice(0,80),desc=$("aud").value.trim();
+var s=await db.from("stores").select("id,slug").eq("id",user.id).maybeSingle();
+var slug=s.data?s.data.slug:slugify(prof.shop_name)+"-"+user.id.slice(0,4);
+var sr=s.data?await db.from("stores").update({tagline:tag}).eq("id",user.id):await db.from("stores").insert({id:user.id,slug:slug,name:prof.shop_name,tagline:tag,color:cur.k.c,city:prof.city});
+if(sr.error){b.disabled=false;return msg("aum","Boutique impossible à enregistrer. Réessaie.")}
+var row={seller_id:user.id,name:cur.name,category:cur.c,price:cur.price,description:desc,emoji:cur.x?cur.x.emoji:"🎁"};
+if(cur.x){row.kind="dropship";row.supplier_type=cur.x.supplier_type;row.supplier_price=cur.x.cost}
+var pr=await db.from("products").insert(row);
+b.disabled=false;
+if(pr.error)return msg("aum","Produit impossible à ajouter (limite d’abonnement atteinte ?).");
+lien=location.origin+"/boutique.html?b="+slug;
+$("aux").value=$("aux").value.replace("{LIEN}",lien);
+msg("aum","C’est fait ! Ton produit attend sa validation. Ta boutique : "+lien,1);
+myProducts();refresh()};
+$("auk").onclick=async function(){
+var t=$("aux").value.replace("{LIEN}",lien||"");
+try{await navigator.clipboard.writeText(t);msg("aum","Texte copié !",1)}catch(e){msg("aum","Copie impossible : appuie longuement sur le texte pour le copier.")}};
+var old=refresh;
+refresh=async function(){await old();if(user&&prof&&!cat.length)loadCat()};
+})();
+</script>
