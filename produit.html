@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Produit</title>
+<style>
+:root{--c:#1F2A6B;--ct:#fff}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:#F6F7FB;color:#14162B;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+header{background:var(--c);color:var(--ct);padding:14px 16px}
+header div,main,footer{max-width:560px;margin:auto}
+header div{display:flex;align-items:center;gap:10px;font-weight:800}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#fff}
+main{padding:16px}
+.pic{background:#fff;border:1px solid #DADDEA;border-radius:20px;height:360px;display:grid;place-items:center;overflow:hidden;font-size:6rem}
+.pic img{width:100%;height:100%;object-fit:contain}
+h1{font-size:1.7rem;line-height:1.15;margin:16px 0 4px}
+.price{font-size:1.8rem;font-weight:800;color:#1E8E5A;margin:0 0 8px}
+.m{color:#5B607A;font-size:.95rem}
+ul{padding-left:0;list-style:none;margin:12px 0}li{margin:4px 0}
+.panel{background:#fff;border:1px solid #DADDEA;border-radius:18px;padding:18px;margin-top:16px}
+label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 4px}
+input,select{font:inherit;width:100%;padding:12px;border:2px solid #DADDEA;border-radius:12px;background:#fff;color:#14162B}
+.btn{border:0;background:var(--c);color:var(--ct);font:700 16px inherit;padding:14px 20px;border-radius:999px;cursor:pointer;width:100%;margin-top:14px}
+.btn.o{background:transparent;color:#14162B;border:2px solid #DADDEA;text-decoration:none;display:block;text-align:center}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:1.2rem;padding-top:14px}
+.ok{background:#1E8E5A;color:#fff;border-radius:14px;padding:14px;margin-top:12px}
+footer{padding:24px 16px;text-align:center}footer a{color:inherit}
+</style>
+</head>
+<body>
+<header><div><span id="lg"></span><span id="sn">Sunu Marché</span></div></header>
+<main>
+<div id="nf" hidden><p>Produit introuvable.</p><p><a href="/">Voir toutes les boutiques</a></p></div>
+<div id="pg" hidden>
+<div class="pic" id="pic"></div>
+<h1 id="pn"></h1>
+<p class="price" id="pp"></p>
+<p class="m" id="pd"></p>
+<ul><li>✓ Paiement par Wave, Orange Money ou à la livraison</li><li>✓ Commande confirmée avec toi par WhatsApp</li></ul>
+<a class="btn o" id="sh" target="_blank" rel="noopener">Partager sur WhatsApp</a>
+<div class="panel">
+<h2 style="margin:0">Commander</h2>
+<label for="q">Quantité</label><input id="q" type="number" min="1" max="20" value="1" inputmode="numeric">
+<label for="bn">Ton nom</label><input id="bn">
+<label for="bp">Téléphone</label><input id="bp" type="tel">
+<label for="ba">Adresse de livraison</label><input id="ba">
+<label for="pay">Paiement</label>
+<select id="pay"><option>Wave</option><option>Orange Money</option><option>Paiement à la livraison</option></select>
+<div class="tot"><span>Total</span><span id="tot"></span></div>
+<p class="m" id="cm" role="alert"></p>
+<button class="btn" id="go">Commander maintenant</button>
+</div>
+<div id="done"></div>
+</div>
+</main>
+<footer class="m">Page propulsée par <a href="/">Sunu Marché</a> · <a href="/conditions.html">Conditions de vente</a></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var SB_URL="https://odmkeeiwlaetrikmyhbk.supabase.co",SB_KEY="sb_publishable_jWB5zwgGyI96zLaJ1RmG2Q_UmOxmuo6";
+var WA="221781498148",WAVE="78 149 81 48",OM="78 149 81 48";
+var db=supabase.createClient(SB_URL,SB_KEY),$=function(i){return document.getElementById(i)};
+var prod=null,store=null;
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fc(n){return Number(n).toLocaleString("fr-FR")+" FCFA"}
+function lum(h){return(0.299*parseInt(h.substr(1,2),16)+0.587*parseInt(h.substr(3,2),16)+0.114*parseInt(h.substr(5,2),16))/255}
+function qty(){var n=parseInt($("q").value,10);return n>=1&&n<=20?n:1}
+function total(){$("tot").textContent=fc(prod.price*qty())}
+async function init(){
+var id=new URLSearchParams(location.search).get("p");
+var r=id?await db.from("products").select("*").eq("id",id).eq("status","approved").maybeSingle():{};
+if(!r.data){$("nf").hidden=false;return}
+prod=r.data;
+var s=await db.from("stores").select("*").eq("id",prod.seller_id).maybeSingle();store=s.data;
+if(store){
+$("sn").textContent=store.name;
+document.documentElement.style.setProperty("--c",store.color);
+document.documentElement.style.setProperty("--ct",lum(store.color)>0.6?"#14162B":"#fff");
+if(store.logo_url)$("lg").innerHTML='<img src="'+esc(store.logo_url)+'" alt="">'}
+document.title=prod.name;
+$("pic").innerHTML=prod.image_url?'<img src="'+esc(prod.image_url)+'" alt="'+esc(prod.name)+'">':esc(prod.emoji||"🎁");
+$("pn").textContent=prod.name;$("pp").textContent=fc(prod.price);$("pd").textContent=prod.description||"";
+$("sh").href="https://wa.me/?text="+encodeURIComponent("Découvre "+prod.name+" : "+location.href);
+$("q").oninput=total;total();$("pg").hidden=false}
+$("go").onclick=async function(){
+var nm=$("bn").value.trim(),ph=$("bp").value.trim(),ad=$("ba").value.trim();
+if(!nm||!ph||!ad){$("cm").textContent="Remplis ton nom, ton téléphone et ton adresse.";return}
+var n=qty(),t=prod.price*n,pay=$("pay").value;this.disabled=true;
+var row={buyer_name:nm,buyer_phone:ph,address:ad,payment:pay,items:[{id:prod.id,name:prod.name,qty:n,price:prod.price}],total:t};
+if(store)row.store_id=store.id;
+var r=await db.from("orders").insert(row);
+this.disabled=false;
+if(r.error){$("cm").textContent="Commande impossible. Réessaie dans un instant.";return}
+$("cm").textContent="";
+var m="Bonjour, je viens de commander "+n+" × "+prod.name+(store?" ("+store.name+")":"")+". Total : "+fc(t)+". Livraison : "+ad+". Paiement : "+pay+". Nom : "+nm+", tél : "+ph;
+var num=pay==="Wave"?WAVE:OM;
+$("done").innerHTML='<div class="ok"><b>Commande enregistrée, merci '+esc(nm)+' !</b><br>'+(pay==="Paiement à la livraison"?"Tu paieras à la réception.":"Envoie "+fc(t)+" par "+esc(pay)+" au "+esc(num)+".")+' Puis confirme sur WhatsApp.</div><a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/'+WA+'?text='+encodeURIComponent(m)+'">Confirmer sur WhatsApp</a>'};
+init();
+</script>
+</body>
+</html>
