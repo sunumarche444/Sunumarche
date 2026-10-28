@@ -473,3 +473,60 @@ var old=refresh;
 refresh=async function(){await old();toggle()};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("afl"))return;
+var p=document.createElement("div");p.className="panel";p.style.maxWidth="none";
+p.innerHTML='<h2>Affiches à partager</h2><p class="m">Crée une belle image de ton produit pour WhatsApp, TikTok et Instagram.</p><div id="afl"></div><div id="afv" style="margin-top:12px"></div>';
+var h=[].slice.call(document.querySelectorAll("#s-dash h3")).filter(function(x){return x.textContent==="Mes produits"})[0];
+h.parentNode.insertBefore(p,h);
+var prods=[],store=null;
+function lum(h){return(0.299*parseInt(h.substr(1,2),16)+0.587*parseInt(h.substr(3,2),16)+0.114*parseInt(h.substr(5,2),16))/255}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function wrap(c,t,x,y,w,lh){var ls=[],line="";
+String(t).split(" ").forEach(function(wd){var test=line?line+" "+wd:wd;if(c.measureText(test).width>w&&line){ls.push(line);line=wd}else line=test});
+ls.push(line);ls=ls.slice(0,2);ls.forEach(function(l,i){c.fillText(l,x,y+i*lh)});return y+(ls.length-1)*lh}
+function loadImg(u){return new Promise(function(ok){var i=new Image();i.crossOrigin="anonymous";i.onload=function(){ok(i)};i.onerror=function(){ok(null)};i.src=u})}
+async function loadAff(){
+var s=await db.from("stores").select("*").eq("id",user.id).maybeSingle();store=s.data;
+var r=await db.from("products").select("*").eq("seller_id",user.id).eq("status","approved").order("created_at",{ascending:false});
+prods=r.data||[];
+document.getElementById("afl").innerHTML=!store?'<p class="m">Crée d’abord ta boutique ci-dessus.</p>':prods.length?prods.map(function(x){return '<div class="ln"><div><b>'+esc(x.emoji||"")+' '+esc(x.name)+'</b><span class="m">'+fc(x.price)+'</span></div><button class="btn" data-af="'+esc(x.id)+'" type="button">Créer l’affiche</button></div>'}).join(""):'<p class="m">Tes produits publiés apparaîtront ici.</p>'}
+async function poster(x){
+var W=1080,H=1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;var c=cv.getContext("2d");
+var col=store.color,tc=lum(col)>0.6?"#14162B":"#FFFFFF";
+c.fillStyle=col;c.fillRect(0,0,W,H);
+c.fillStyle=tc;c.textAlign="left";c.font="bold 54px Arial, sans-serif";c.fillText(store.name.slice(0,26),70,115);
+if(store.tagline){c.globalAlpha=.85;c.font="32px Arial, sans-serif";c.fillText(store.tagline.slice(0,50),70,165);c.globalAlpha=1}
+c.fillStyle="#FFFFFF";rr(c,70,210,940,720,36);c.fill();
+var img=x.image_url?await loadImg(x.image_url):null;
+c.save();rr(c,70,210,940,720,36);c.clip();
+if(img){var s=Math.min(940/img.width,720/img.height),w=img.width*s,hh=img.height*s;c.drawImage(img,70+(940-w)/2,210+(720-hh)/2,w,hh)}
+else{c.font="300px serif";c.textAlign="center";c.fillStyle="#14162B";c.fillText(x.emoji||"🎁",540,640);c.textAlign="left"}
+c.restore();
+c.fillStyle=tc;c.font="bold 66px Arial, sans-serif";var y=wrap(c,x.name,70,1030,940,76);
+c.fillStyle="#F4B400";rr(c,70,y+30,520,100,50);c.fill();
+c.fillStyle="#14162B";c.font="bold 56px Arial, sans-serif";c.textAlign="center";c.fillText(fc(x.price),330,y+100);c.textAlign="left";
+c.fillStyle=tc;c.font="30px Arial, sans-serif";c.globalAlpha=.9;
+c.fillText("Commande ici : "+location.host+"/boutique.html?b="+store.slug,70,1270);
+c.fillText("Wave · Orange Money · Livraison",70,1315);c.globalAlpha=1;
+return new Promise(function(ok){cv.toBlob(function(b){ok(b)},"image/jpeg",.9)})}
+document.getElementById("afl").onclick=async function(e){
+var b=e.target.closest("[data-af]");if(!b)return;
+var x=prods.find(function(i){return i.id==b.dataset.af});
+b.disabled=true;b.textContent="Création…";
+var blob=null;
+try{blob=await poster(x)}catch(err){}
+b.disabled=false;b.textContent="Créer l’affiche";
+if(!blob){document.getElementById("afv").innerHTML='<p class="m">Création impossible. Réessaie.</p>';return}
+var u=URL.createObjectURL(blob),v=document.getElementById("afv");
+v.innerHTML='<img src="'+u+'" alt="Affiche" style="width:100%;max-width:420px;border-radius:14px;display:block"><p class="m">Appuie longuement sur l’image pour l’enregistrer, ou utilise les boutons.</p><button class="btn g" id="afs" type="button">Partager</button> <a class="btn o" style="text-decoration:none;display:inline-block" download="affiche.jpg" href="'+u+'">Enregistrer</a>';
+document.getElementById("afs").onclick=async function(){
+var f=new File([blob],"affiche.jpg",{type:"image/jpeg"});
+if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:x.name+" – "+fc(x.price)+"\n"+location.origin+"/boutique.html?b="+store.slug})}catch(er){}}
+else window.open(u,"_blank")};
+v.scrollIntoView({behavior:"smooth"})};
+var old=refresh;
+refresh=async function(){await old();if(user&&prof)loadAff()};
+})();
+</script>
