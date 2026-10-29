@@ -672,3 +672,44 @@ var om=myProducts;
 myProducts=async function(){await om();upd()};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("an"))return;
+var P=document.createElement("div");P.className="panel";P.id="an";P.style.maxWidth="none";
+P.innerHTML='<h2>Analyses et bénéfices</h2><select id="anp" style="max-width:240px"><option value="7">7 derniers jours</option><option value="30" selected>30 derniers jours</option><option value="0">Depuis le début</option></select><div id="anb" style="margin-top:14px"></div>';
+var oh=[].slice.call(document.querySelectorAll("#s-dash h2")).filter(function(x){return x.textContent==="Mes commandes"})[0];
+var ref=oh?oh.parentNode:document.getElementById("s-dash").lastElementChild;
+ref.parentNode.insertBefore(P,ref);
+function card(t,v){return '<div style="background:var(--ln);border-radius:14px;padding:12px"><div class="m">'+t+'</div><div style="font-weight:800;font-size:1.15rem">'+v+'</div></div>'}
+async function run(){
+if(!user||!prof)return;
+var days=Number(document.getElementById("anp").value);
+var q=db.from("orders").select("*").eq("store_id",user.id).neq("status","cancelled").order("created_at",{ascending:false}).limit(500);
+if(days)q=q.gte("created_at",new Date(Date.now()-days*86400000).toISOString());
+var o=await q,pr=await db.from("products").select("id,name,price,supplier_price").eq("seller_id",user.id);
+var L=o.data||[],map={};(pr.data||[]).forEach(function(x){map[x.id]=x});
+var b=document.getElementById("anb");
+if(o.error){b.textContent="Chargement impossible.";return}
+if(!L.length){b.innerHTML='<p class="m">Pas encore de commandes sur cette période. Partage ton lien pour en recevoir !</p>';return}
+var ca=0,gain=0,known=0,top={};
+L.forEach(function(r){ca+=Number(r.total);(r.items||[]).forEach(function(i){
+var t=top[i.name]||(top[i.name]={n:0,c:0});t.n+=Number(i.qty);t.c+=Number(i.qty)*Number(i.price);
+var p=map[i.id];if(p&&p.supplier_price!=null){gain+=(Number(i.price)-Number(p.supplier_price))*Number(i.qty);known++}})});
+var bars=[],mx=1;
+for(var d=6;d>=0;d--){var dt=new Date(Date.now()-d*86400000),key=dt.toISOString().slice(0,10);
+var c=L.filter(function(r){return String(r.created_at).slice(0,10)===key}).length;
+if(c>mx)mx=c;bars.push({k:dt.toLocaleDateString("fr-FR",{weekday:"short"}),c:c})}
+var tl=Object.keys(top).map(function(k){return {n:k,v:top[k]}}).sort(function(a,b){return b.v.n-a.v.n}).slice(0,5);
+b.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
++card("Commandes",L.length)+card("Chiffre d’affaires",fc(ca))+card("Panier moyen",fc(Math.round(ca/L.length)))
++card("Bénéfice estimé (dropshipping)",known?fc(gain):"—")+'</div>'
++'<h3 style="margin:16px 0 6px">Commandes des 7 derniers jours</h3><div style="display:flex;align-items:flex-end;gap:6px;height:90px">'
++bars.map(function(x){return '<div style="flex:1;text-align:center"><div style="background:var(--lf);height:'+Math.round(x.c/mx*60)+'px;min-height:'+(x.c?4:1)+'px;border-radius:6px 6px 0 0"></div><div class="m" style="font-size:.75rem">'+esc(x.k)+'<br>'+x.c+'</div></div>'}).join("")+'</div>'
++'<h3 style="margin:16px 0 6px">Produits les plus vendus</h3>'
++tl.map(function(t){return '<div class="ln"><span>'+esc(t.n)+'</span><span class="m">'+t.v.n+' vendu(s) · '+fc(t.v.c)+'</span></div>'}).join("")
++'<p class="m" style="margin-top:10px">Le bénéfice estimé ne compte que les produits de fournisseurs (prix de vente moins prix fournisseur). Les frais éventuels ne sont pas inclus.</p>'}
+document.getElementById("anp").onchange=run;
+var old=refresh;
+refresh=async function(){await old();run()};
+})();
+</script>
