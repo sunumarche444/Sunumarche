@@ -637,3 +637,38 @@ document.getElementById("aud").value=name+" : "+k.i+". "+k.p.join(" · ")+".";
 document.getElementById("aux").value="✨ "+name+" — "+fc(price)+"\n"+a+"\n✅ "+k.p[0]+"\n✅ "+k.p[1]+"\nCommande ici 👉 "+lien+"\n"+k.h};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("gd"))return;
+var dash=document.getElementById("s-dash");
+var g=document.createElement("div");g.className="panel";g.id="gd";g.style.maxWidth="none";
+g.innerHTML='<h2>Guide de démarrage</h2><p class="m" id="gdt"></p><div style="background:var(--ln);border-radius:99px;height:10px;overflow:hidden;margin:10px 0"><div id="gdb" style="height:10px;width:0;background:var(--lf);transition:width .3s"></div></div><div id="gdl"></div>';
+dash.insertBefore(g,dash.firstChild);
+var STEPS=[
+{k:"store",t:"Créer ma boutique",to:"stn"},
+{k:"logo",t:"Ajouter mon logo",to:"stlg"},
+{k:"prod",t:"Ajouter mon premier produit",to:"pnm"},
+{k:"live",t:"Faire publier un produit (validation par Sunu Marché)",to:"mine"},
+{k:"tg",t:"Activer mes alertes Telegram",to:"tgid"},
+{k:"order",t:"Recevoir ma première commande",to:"stk"}
+];
+async function upd(){
+if(!user||!prof)return;
+var s=await db.from("stores").select("id,logo_url").eq("id",user.id).maybeSingle();
+var pc=await db.from("products").select("id",{count:"exact",head:true}).eq("seller_id",user.id).neq("status","rejected");
+var pa=await db.from("products").select("id",{count:"exact",head:true}).eq("seller_id",user.id).eq("status","approved");
+var tg=await db.from("store_private").select("telegram_chat_id").eq("id",user.id).maybeSingle();
+var oc=await db.from("orders").select("id",{count:"exact",head:true}).eq("store_id",user.id);
+var d={store:!!s.data,logo:!!(s.data&&s.data.logo_url),prod:(pc.count||0)>0,live:(pa.count||0)>0,tg:!!(tg.data&&tg.data.telegram_chat_id),order:(oc.count||0)>0};
+var n=STEPS.filter(function(x){return d[x.k]}).length;
+document.getElementById("gdb").style.width=Math.round(n/STEPS.length*100)+"%";
+var nx=STEPS.find(function(x){return !d[x.k]});
+document.getElementById("gdt").textContent=nx?"Étape "+(n+1)+" sur "+STEPS.length+" : "+nx.t:"Bravo, ta boutique est lancée ! Partage ton lien pour recevoir plus de commandes.";
+document.getElementById("gdl").innerHTML=STEPS.map(function(x){return '<div class="ln"><span>'+(d[x.k]?"✅":"⬜")+" "+x.t+'</span>'+(d[x.k]?"":'<button class="btn o" data-to="'+x.to+'" type="button">Y aller</button>')+'</div>'}).join("")}
+document.getElementById("gdl").onclick=function(e){var b=e.target.closest("[data-to]");if(!b)return;var el=document.getElementById(b.dataset.to);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});if(el.focus)try{el.focus({preventScroll:true})}catch(x){}}};
+var old=refresh;
+refresh=async function(){await old();upd()};
+var om=myProducts;
+myProducts=async function(){await om();upd()};
+})();
+</script>
