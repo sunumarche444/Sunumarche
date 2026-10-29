@@ -744,3 +744,21 @@ document.getElementById("np").value="";
 setTimeout(function(){rp.hidden=true;history.replaceState(null,"",location.pathname)},1500)};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("rt"))return;
+var s=document.getElementById("sell");if(!s)return;
+var P=document.createElement("div");P.className="panel";P.id="rt";
+P.innerHTML='<h2>Ton abonnement est-il rentable ?</h2><p class="m">Fais le calcul avec tes propres chiffres.</p><label for="rtp">Abonnement</label><select id="rtp"><option value="2500">Starter · 2 500 F/mois</option><option value="5000">Pro · 5 000 F/mois</option><option value="9000" selected>Premium · 9 000 F/mois</option></select><label for="rtn">Ventes par mois : <b id="rtv">10</b></label><input id="rtn" type="range" min="1" max="100" value="10" style="padding:0"><label for="rtm">Ton gain par vente (FCFA)</label><input id="rtm" type="number" inputmode="numeric" value="5000"><div id="rtr" style="margin-top:14px"></div>';
+s.insertBefore(P,s.firstChild);
+function calc(){
+var prix=Number(document.getElementById("rtp").value),n=Number(document.getElementById("rtn").value),m=Number(document.getElementById("rtm").value);
+document.getElementById("rtv").textContent=n;
+var r=document.getElementById("rtr");
+if(!(m>0)){r.innerHTML='<p class="m">Écris ton gain par vente pour voir le calcul.</p>';return}
+var gain=n*m,net=gain-prix,need=Math.ceil(prix/m);
+r.innerHTML='<div class="ok" style="background:'+(net>=0?"var(--lf)":"#8A5A2B")+'"><b>'+(need===1?"1 vente suffit":need+" ventes suffisent")+' pour rembourser ton abonnement de '+fc(prix)+'.</b><br>Avec '+n+' vente(s) par mois : gain de '+fc(gain)+', soit <b>'+fc(net)+'</b> après l’abonnement.</div><p class="m">Estimation selon tes chiffres, hors frais éventuels (livraison, paiement). Ce n’est pas une promesse de gains.</p>'}
+["rtp","rtn","rtm"].forEach(function(id){document.getElementById(id).oninput=calc;document.getElementById(id).onchange=calc});
+calc();
+})();
+</script>
