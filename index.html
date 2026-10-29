@@ -762,3 +762,45 @@ r.innerHTML='<div class="ok" style="background:'+(net>=0?"var(--lf)":"#8A5A2B")+
 calc();
 })();
 </script>
+<script>
+(function(){
+if(window.__inv)return;window.__inv=1;
+var odl=document.getElementById("odl");if(!odl)return;
+var st=document.createElement("style");
+st.textContent="@media print{body>*:not(#invo){display:none!important}#invo{position:static!important;overflow:visible!important;background:#fff!important;padding:0!important}.noprint{display:none!important}}";
+document.head.appendChild(st);
+var ov=document.createElement("div");ov.id="invo";ov.hidden=true;
+ov.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:#EEF0F7;overflow:auto;z-index:50;padding:12px";
+document.body.appendChild(ov);
+var ST={new:"Nouvelle",confirmed:"Confirmée",shipped:"Expédiée",delivered:"Livrée",cancelled:"Annulée"};
+function add(){odl.querySelectorAll("select[data-oid]").forEach(function(s){
+if(s.parentNode.querySelector(".fa"))return;
+var b=document.createElement("button");b.type="button";b.className="btn o fa";b.textContent="Facture";b.dataset.id=s.dataset.oid;b.style.cssText="margin-top:8px;margin-left:8px";
+s.parentNode.appendChild(b)})}
+new MutationObserver(add).observe(odl,{childList:true});add();
+function td(a,x){return '<td style="padding:8px;border-bottom:1px solid #DADDEA;text-align:'+a+'">'+x+'</td>'}
+function show(o,store){
+var num="F-"+String(o.id).padStart(5,"0"),d=new Date(o.created_at).toLocaleDateString("fr-FR");
+var rows=(o.items||[]).map(function(i){return '<tr>'+td("left",esc(i.name))+td("center",esc(i.qty))+td("right",fc(i.price))+td("right",fc(Number(i.qty)*Number(i.price)))+'</tr>'}).join("");
+ov.innerHTML='<div class="noprint" style="max-width:720px;margin:0 auto 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn g" id="ivp" type="button">Imprimer / PDF</button><button class="btn o" id="ivc" type="button">Fermer</button><input id="ivn" placeholder="NINEA (facultatif)" style="flex:1;min-width:160px"></div>'
++'<div style="max-width:720px;margin:auto;background:#fff;color:#14162B;padding:24px;border-radius:12px;font:15px/1.5 system-ui,-apple-system,sans-serif">'
++'<h1 style="margin:0;font-size:1.6rem">FACTURE</h1><p style="margin:2px 0 16px;color:#5B607A">N° '+num+' · '+esc(d)+'</p>'
++'<div style="display:flex;gap:24px;flex-wrap:wrap"><div style="flex:1;min-width:200px"><b>Vendeur</b><br>'+esc(prof.shop_name)+'<br>'+esc((store&&store.city)||prof.city||"")+'<br>WhatsApp : '+esc(prof.whatsapp||"")+'<br><span id="ivs"></span></div>'
++'<div style="flex:1;min-width:200px"><b>Client</b><br>'+esc(o.buyer_name)+'<br>'+esc(o.buyer_phone)+'<br>'+esc(o.address)+'</div></div>'
++'<table style="width:100%;border-collapse:collapse;margin-top:18px"><thead><tr style="background:#F6F7FB">'+td("left","<b>Désignation</b>")+td("center","<b>Qté</b>")+td("right","<b>Prix unitaire</b>")+td("right","<b>Total</b>")+'</tr></thead><tbody>'+rows+'</tbody></table>'
++'<p style="text-align:right;font-size:1.2rem;margin:16px 0 4px"><b>Total à payer : '+fc(o.total)+'</b></p>'
++'<p style="color:#5B607A;margin:0">Paiement : '+esc(o.payment)+' · Statut de la commande : '+esc(ST[o.status]||o.status)+'</p>'
++'<p style="color:#5B607A;font-size:.85rem;margin-top:18px">Document commercial simple. Prix en francs CFA (FCFA). Merci pour votre confiance.</p></div>';
+ov.hidden=false;ov.scrollTop=0;
+document.getElementById("ivp").onclick=function(){window.print()};
+document.getElementById("ivc").onclick=function(){ov.hidden=true};
+document.getElementById("ivn").oninput=function(){document.getElementById("ivs").textContent=this.value.trim()?"NINEA : "+this.value.trim():""}}
+odl.addEventListener("click",async function(e){
+var b=e.target.closest(".fa");if(!b)return;
+b.disabled=true;
+var r=await db.from("orders").select("*").eq("id",b.dataset.id).maybeSingle();
+var s=await db.from("stores").select("city").eq("id",user.id).maybeSingle();
+b.disabled=false;
+if(r.data)show(r.data,s.data)});
+})();
+</script>
