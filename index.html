@@ -713,3 +713,34 @@ var old=refresh;
 refresh=async function(){await old();run()};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("fp"))return;
+var su=document.getElementById("su");if(!su)return;
+var a=document.createElement("p");a.className="m";a.style.marginTop="12px";
+a.innerHTML='<a href="#" id="fp">Mot de passe oublié ?</a>';
+su.parentNode.insertBefore(a,su.nextSibling);
+document.getElementById("fp").onclick=async function(e){
+e.preventDefault();
+var em=document.getElementById("em").value.trim();
+if(!em)return msg("am","Écris d’abord ton e-mail ci-dessus, puis appuie sur « Mot de passe oublié ? ».");
+var r=await db.auth.resetPasswordForEmail(em,{redirectTo:location.origin+"/"});
+if(r.error)return msg("am","Envoi impossible pour le moment. Réessaie dans quelques minutes.");
+msg("am","Si cet e-mail a un compte, tu reçois un lien pour choisir un nouveau mot de passe. Regarde aussi dans les spams.",1)};
+var s=document.getElementById("sell");
+var rp=document.createElement("div");rp.className="panel";rp.id="rp";rp.hidden=true;
+rp.innerHTML='<h2>Nouveau mot de passe</h2><label for="np">Choisis un nouveau mot de passe (8 caractères minimum)</label><input id="np" type="password" autocomplete="new-password"><p class="m" id="rpm" role="alert"></p><button class="btn g" id="rpb" type="button">Enregistrer</button>';
+s.insertBefore(rp,s.firstChild);
+function open(){show("sell");rp.hidden=false}
+if(/type=recovery/.test(location.hash))open();
+db.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY")open()});
+document.getElementById("rpb").onclick=async function(){
+var v=document.getElementById("np").value;
+if(v.length<8)return msg("rpm","8 caractères minimum.");
+var r=await db.auth.updateUser({password:v});
+if(r.error)return msg("rpm","Changement impossible. Le lien a peut-être expiré : recommence.");
+msg("rpm","Mot de passe changé !",1);
+document.getElementById("np").value="";
+setTimeout(function(){rp.hidden=true;history.replaceState(null,"",location.pathname)},1500)};
+})();
+</script>
