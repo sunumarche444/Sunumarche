@@ -119,4 +119,19 @@ if(user&&prof){var r=await db.from("stores").select("style").eq("id",user.id).ma
 if(r.data)document.getElementById("sty").value=r.data.style||"classique"}};
 })();
 </script>
-produit.html
+<script>
+(function(){
+var CSS={
+doux:"body{background:#FBF7FF}.card,.panel,.pic{border-radius:28px}.btn{border-radius:999px}header{border-radius:0 0 32px 32px}",
+nuit:"body{background:#0E1022;color:#F1F2FA}.card,.panel{background:#181B35;border-color:#2B2F55}.m{color:#A3A8C8}.price{color:#5EE6A8}.pic{background:#222750}input,select{background:#181B35;color:#F1F2FA;border-color:#2B2F55}.ln{border-color:#2B2F55}.ln button{background:#181B35;color:#F1F2FA;border-color:#2B2F55}.btn.o{color:#F1F2FA;border-color:#2B2F55}footer,footer a{color:#A3A8C8}",
+eclat:"header{background:linear-gradient(135deg,var(--c) 0%,#14162B 130%);color:#fff;padding:56px 16px;border-radius:0 0 36px 36px}header h1{font-size:clamp(2.2rem,9vw,3.4rem)}.card,.panel,.pic{border-radius:26px}.btn{border-radius:999px}"
+};
+var t=setInterval(function(){
+if(typeof store==="undefined"||!store)return;
+clearInterval(t);
+var c=CSS[store.style];if(!c)return;
+var s=document.createElement("style");s.textContent=c;document.head.appendChild(s)},300);
+setTimeout(function(){clearInterval(t)},10000);
+})();
+</script>
+
