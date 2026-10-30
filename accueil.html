@@ -89,3 +89,24 @@ footer{padding:40px 0;text-align:center;color:var(--mu);font-size:.9rem}
 </div>
 </body>
 </html>
+<script>
+(function(){
+var B={"Starter":2500,"Pro":5000,"Premium":9000},D=[[1,0,"1 mois"],[3,10,"3 mois (−10 %)"],[6,15,"6 mois (−15 %)"],[12,20,"12 mois (−20 %)"]];
+function f(n){return n.toLocaleString("fr-FR")+" F"}
+var sec=[].slice.call(document.querySelectorAll("section")).filter(function(s){return /abonnement/i.test(s.textContent)})[0];
+if(!sec)return;
+var grid=sec.querySelector(".g");
+var w=document.createElement("div");w.style.cssText="margin:0 0 14px";
+w.innerHTML='<label for="dur" style="font-weight:700;display:block;margin-bottom:6px">Durée (un seul paiement)</label><select id="dur" style="font:inherit;padding:10px 12px;border:2px solid var(--ln);border-radius:12px;background:var(--sf);color:var(--ink)">'+D.map(function(d,i){return '<option value="'+i+'">'+d[2]+'</option>'}).join("")+'</select>';
+sec.insertBefore(w,grid);
+function upd(){
+var d=D[document.getElementById("dur").value];
+grid.querySelectorAll(".c").forEach(function(c){
+var n=c.querySelector("h3").textContent.trim();if(!B[n])return;
+var tot=Math.round(B[n]*d[0]*(1-d[1]/100)/100)*100;
+c.querySelector(".pr").innerHTML=f(tot)+"<small> "+(d[0]>1?"pour "+d[0]+" mois":"/ mois")+"</small>";
+var a=c.querySelector("a");
+a.href="https://wa.me/221781498148?text="+encodeURIComponent("Bonjour Sunu Marché, je veux l’abonnement "+n+" pour "+d[0]+" mois ("+f(tot)+").")})}
+document.getElementById("dur").onchange=upd;upd();
+})();
+</script>
