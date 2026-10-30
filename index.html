@@ -823,3 +823,22 @@ if(user&&prof){var r=await db.from("stores").select("style").eq("id",user.id).ma
 if(r.data)document.getElementById("sty").value=r.data.style||"classique"}};
 })();
 </script>
+<script>
+(function(){
+if(document.getElementById("sty"))return;
+var sts=document.getElementById("sts");if(!sts)return;
+var w=document.createElement("div");
+w.innerHTML='<label for="sty">Style de ta boutique</label><select id="sty"><option value="classique">Classique</option><option value="doux">Doux</option><option value="nuit">Nuit (Premium)</option><option value="eclat">Éclat (Premium)</option></select><p class="m" id="stym" role="alert"></p><button class="btn o" id="styb" type="button">Enregistrer le style</button>';
+sts.parentNode.insertBefore(w,sts);
+document.getElementById("styb").onclick=async function(){
+var v=document.getElementById("sty").value;
+var r=await db.from("stores").update({style:v}).eq("id",user.id).select("id");
+if(r.error)return msg("stym",/Premium/.test(r.error.message)?"Ce style est réservé à l’abonnement Premium.":"Enregistrement impossible.");
+if(!r.data||!r.data.length)return msg("stym","Enregistre d’abord ta boutique ci-dessus.");
+msg("stym","Style enregistré ! Ouvre ta boutique pour le voir.",1)};
+var old=refresh;
+refresh=async function(){await old();
+if(user&&prof){var r=await db.from("stores").select("style").eq("id",user.id).maybeSingle();
+if(r.data)document.getElementById("sty").value=r.data.style||"classique"}};
+})();
+</script>
