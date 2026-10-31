@@ -110,3 +110,177 @@ a.href="https://wa.me/221781498148?text="+encodeURIComponent("Bonjour Sunu March
 document.getElementById("dur").onchange=upd;upd();
 })();
 </script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sunu Marché – ta boutique en ligne au Sénégal</title>
+<style>
+:root{--bg:#F6F7FB;--sf:#fff;--ink:#14162B;--mu:#5B607A;--in:#1F2A6B;--sun:#F4B400;--lf:#1E8E5A;--ln:#DADDEA}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}
+.w{max-width:960px;margin:auto;padding:0 18px}
+header{display:flex;align-items:center;gap:10px;padding:16px 0}
+header b{font-size:1.15rem;flex:1}
+.btn{display:inline-block;text-decoration:none;background:var(--in);color:#fff;font-weight:700;padding:13px 22px;border-radius:999px;border:0;font-size:1rem}
+.btn.s{padding:9px 16px;font-size:.9rem}
+.btn.o{background:transparent;border:2px solid var(--ln);color:var(--ink)}
+.btn.y{background:var(--sun);color:#14162B}
+.hero{text-align:center;padding:28px 0 10px}
+h1{font-size:clamp(2rem,8vw,3.5rem);line-height:1.08;margin:0 auto;font-weight:800;max-width:14em}
+h1 span{background:linear-gradient(90deg,#1F2A6B,#1E8E5A);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--mu);font-size:1.08rem;max-width:34rem;margin:16px auto 22px}
+.chk{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;list-style:none;padding:0;margin:18px 0 0;color:var(--mu);font-size:.92rem}
+.phone{width:250px;margin:30px auto 0;border:8px solid #14162B;border-radius:38px;overflow:hidden;background:#fff;text-align:left;box-shadow:0 18px 40px rgba(20,22,43,.2)}
+.ph-h{background:var(--in);color:#fff;padding:16px 14px;display:flex;align-items:center;gap:10px}
+.ph-h i{width:32px;height:32px;border-radius:50%;background:var(--sun);display:block}
+.ph-h b{font-size:.95rem;display:block}.ph-h small{opacity:.8;font-size:.72rem}
+.ph-b{padding:12px;display:grid;gap:10px;background:var(--bg)}
+.pc{background:#fff;border:1px solid var(--ln);border-radius:14px;overflow:hidden}
+.pc .im{height:70px;display:grid;place-items:center;font-size:2rem;background:#E6E9F5}
+.pc div.t{padding:8px 10px;font-size:.8rem}.pc div.t b{display:block}.pc div.t span{color:var(--lf);font-weight:800}
+.pc em{display:block;background:var(--in);color:#fff;font-style:normal;text-align:center;font-size:.75rem;padding:6px;margin:0 10px 10px;border-radius:99px}
+.ex{color:var(--mu);font-size:.8rem;text-align:center;margin-top:8px}
+section{padding:42px 0 4px}
+h2{font-size:1.6rem;line-height:1.15;margin:0 0 6px;text-align:center}
+.sub{color:var(--mu);text-align:center;margin:0 auto 22px;max-width:30rem}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.c{background:var(--sf);border:1px solid var(--ln);border-radius:20px;padding:20px}
+.c h3{margin:6px 0;font-size:1.12rem}.c p{margin:0;color:var(--mu)}
+.ic{font-size:1.8rem}
+.n{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--in);color:#fff;font-weight:800;margin-bottom:8px}
+.band{background:#14162B;color:#fff;border-radius:26px;padding:26px 18px;margin-top:42px}
+.band .g{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));text-align:center}
+.band b{font-size:1.5rem;display:block;color:var(--sun)}.band span{font-size:.9rem;opacity:.85}
+.nt{display:grid;gap:10px;max-width:420px;margin:auto}
+.nt div{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;box-shadow:0 6px 16px rgba(20,22,43,.07);font-size:.9rem}
+.nt b{display:block}.nt span{color:var(--mu)}
+.pr{font-size:1.8rem;font-weight:800;margin:4px 0 10px}.pr small{font-size:.9rem;font-weight:500;color:var(--mu)}
+.c ul{padding-left:18px;margin:0 0 16px;color:var(--mu)}
+.c.top{border:2px solid var(--lf)}
+.tag{display:inline-block;background:var(--lf);color:#fff;font-size:.78rem;font-weight:700;padding:2px 10px;border-radius:99px}
+.note{color:var(--mu);font-size:.9rem;text-align:center;margin-top:14px}
+details{background:var(--sf);border:1px solid var(--ln);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+summary{font-weight:700;cursor:pointer}
+details p{margin:10px 0 0;color:var(--mu)}
+.fin{text-align:center;margin-top:42px;padding:34px 18px;border-radius:26px;background:var(--in);color:#fff}
+.fin h2{color:#fff}
+footer{padding:36px 0;text-align:center;color:var(--mu);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="w">
+
+<header>
+<svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#1F2A6B"/><g stroke="#F4B400" stroke-width="3" stroke-linecap="round"><path d="M50 14v8M26 22l5 6M74 22l-5 6M16 40l8 2M84 40l-8 2"/></g><circle cx="50" cy="50" r="18" fill="#F4B400"/><path d="M26 58h48l-8 22H34z" fill="#fff"/><rect x="22" y="54" width="56" height="8" rx="4" fill="#fff"/></svg>
+<b>Sunu Marché</b>
+<a class="btn o s" href="/index.html#vendre">Connexion</a>
+<a class="btn s" href="/index.html#vendre">Créer ma boutique</a>
+</header>
+
+<div class="hero">
+<h1>Ta boutique en ligne au Sénégal, <span>prête en quelques minutes</span>.</h1>
+<p class="lead">Crée ta page de vente, vends tes produits ou ceux de fournisseurs, et reçois chaque commande sur ton téléphone.</p>
+<a class="btn y" href="/index.html#vendre">Créer ma boutique gratuitement →</a>
+<ul class="chk"><li>✓ Gratuit pour commencer</li><li>✓ Sans stock (Premium)</li><li>✓ Wave et Orange Money</li></ul>
+<div class="phone" aria-hidden="true">
+<div class="ph-h"><i></i><div><b>Ta boutique</b><small>Ton accroche ici</small></div></div>
+<div class="ph-b">
+<div class="pc"><div class="im">👗</div><div class="t"><b>Ton produit</b><span>12 000 FCFA</span></div><em>Commander</em></div>
+<div class="pc"><div class="im">👜</div><div class="t"><b>Un autre produit</b><span>7 500 FCFA</span></div><em>Commander</em></div>
+</div></div>
+<p class="ex">Exemple de boutique</p>
+</div>
+
+<section>
+<h2>Ce qui te bloque, on s’en occupe</h2>
+<p class="sub">Trois obstacles courants quand on débute en ligne.</p>
+<div class="g">
+<div class="c"><div class="ic">📦</div><h3>Pas de fournisseur ?</h3><p>Choisis des produits dans le catalogue et vends sans stock avec l’abonnement Premium.</p></div>
+<div class="c"><div class="ic">🛍️</div><h3>Pas de site ?</h3><p>Ta boutique, ta page de vente et ton lien se créent en un clic. Tu les partages tout de suite.</p></div>
+<div class="c"><div class="ic">🖼️</div><h3>Pas de visuels ?</h3><p>Une affiche prête pour WhatsApp, TikTok et Instagram, créée à partir de ton produit.</p></div>
+</div>
+</section>
+
+<div class="band"><div class="g">
+<div><b>Quelques minutes</b><span>pour créer ta boutique</span></div>
+<div><b>0 stock</b><span>à acheter avec Premium</span></div>
+<div><b>100 %</b><span>sur ton téléphone</span></div>
+<div><b>Wave · OM</b><span>paiements mobiles</span></div>
+</div></div>
+
+<section>
+<h2>Lance-toi en 3 étapes</h2>
+<p class="sub">Un guide t’accompagne dans ton espace vendeur.</p>
+<div class="g">
+<div class="c"><div class="n">1</div><h3>Choisis ton produit</h3><p>Un produit à toi, ou un produit de fournisseur livré à ton client.</p></div>
+<div class="c"><div class="n">2</div><h3>Prépare ta boutique</h3><p>Nom, logo, couleur, style et textes prêts en un clic. Tu peux tout modifier.</p></div>
+<div class="c"><div class="n">3</div><h3>Publie et encaisse</h3><p>Partage ton lien. Tu es prévenu à chaque commande.</p></div>
+</div>
+</section>
+
+<section>
+<h2>Chaque commande arrive sur ton téléphone</h2>
+<p class="sub">Active les alertes Telegram et ne rate aucune vente.</p>
+<div class="nt">
+<div><b>Nouvelle commande #12</b><span>1 × Ton produit · 12 000 FCFA (Wave)</span></div>
+<div><b>Nouvelle commande #13</b><span>2 × Un autre produit · 15 000 FCFA (Orange Money)</span></div>
+</div>
+<p class="ex">Exemples de messages</p>
+</section>
+
+<section id="tarifs">
+<h2>Choisis ton abonnement</h2>
+<p class="sub">Commence gratuitement, change quand tu veux.</p>
+<div style="text-align:center;margin-bottom:14px"><label for="dur" style="font-weight:700;display:block;margin-bottom:6px">Durée (un seul paiement)</label>
+<select id="dur" style="font:inherit;padding:10px 12px;border:2px solid var(--ln);border-radius:12px;background:var(--sf);color:var(--ink)"><option value="0">1 mois</option><option value="1">3 mois (−10 %)</option><option value="2">6 mois (−15 %)</option><option value="3">12 mois (−20 %)</option></select></div>
+<div class="g">
+<div class="c"><h3>Gratuit</h3><div class="pr">0 F<small> / mois</small></div><ul><li>Ta boutique et ton lien</li><li>3 produits</li><li>Alertes et suivi des commandes</li></ul><a class="btn o" href="/index.html#vendre">Commencer</a></div>
+<div class="c"><h3>Starter</h3><div class="pr">2 500 F<small> / mois</small></div><ul><li>Tout le gratuit</li><li>25 produits</li></ul><a class="btn o" href="#">Choisir Starter</a></div>
+<div class="c"><h3>Pro</h3><div class="pr">5 000 F<small> / mois</small></div><ul><li>Tout le Starter</li><li>Produits illimités</li></ul><a class="btn o" href="#">Choisir Pro</a></div>
+<div class="c top"><span class="tag">Le plus simple</span><h3>Premium</h3><div class="pr">9 000 F<small> / mois</small></div><ul><li>Tout le Pro</li><li>Dropshipping : vends sans stock</li><li>Styles de boutique Nuit et Éclat</li></ul><a class="btn" href="#">Choisir Premium</a></div>
+</div>
+<p class="note">Pour activer un abonnement, tu écris sur WhatsApp et tu paies par Wave. Ton compte est activé ensuite.</p>
+</section>
+
+<section>
+<h2>Tes questions</h2>
+<p class="sub"> </p>
+<details><summary>Je n’ai jamais rien vendu, c’est pour moi ?</summary><p>Oui. Tu commences gratuitement avec 3 produits, et un guide de démarrage t’accompagne pas à pas dans ton espace vendeur.</p></details>
+<details><summary>Faut-il acheter un stock ?</summary><p>Pas avec l’abonnement Premium : tu choisis un produit chez un fournisseur, qui le livre à ton client. Vérifie toujours le délai de livraison annoncé. Avec les autres offres, tu gères ton propre stock.</p></details>
+<details><summary>Comment mes clients paient-ils ?</summary><p>Par Wave, Orange Money ou à la livraison. Le client envoie son paiement, puis confirme sa commande sur WhatsApp.</p></details>
+<details><summary>Comment je reçois mes commandes ?</summary><p>Dans ton espace vendeur, avec le statut de chaque commande, et par alerte Telegram si tu l’actives.</p></details>
+<details><summary>Qui s’occupe de la livraison ?</summary><p>C’est toi, ou ton fournisseur en dropshipping. Le délai est indiqué sur chaque produit.</p></details>
+</section>
+
+<div class="fin">
+<h2>Ta boutique t’attend</h2>
+<p style="opacity:.9;margin:6px 0 18px">Crée-la gratuitement, c’est rapide.</p>
+<a class="btn y" href="/index.html#vendre">Créer ma boutique gratuitement →</a>
+</div>
+
+<footer>
+<p><a href="/conditions.html">Conditions de vente</a> · <a href="https://wa.me/221781498148">Nous écrire sur WhatsApp</a></p>
+<p>© Sunu Marché</p>
+</footer>
+</div>
+
+<script>
+(function(){
+var B={"Starter":2500,"Pro":5000,"Premium":9000},D=[[1,0],[3,10],[6,15],[12,20]];
+function f(n){return n.toLocaleString("fr-FR")+" F"}
+var grid=document.querySelector("#tarifs .g");
+function upd(){
+var d=D[document.getElementById("dur").value];
+grid.querySelectorAll(".c").forEach(function(c){
+var n=c.querySelector("h3").textContent.trim();if(!B[n])return;
+var tot=Math.round(B[n]*d[0]*(1-d[1]/100)/100)*100;
+c.querySelector(".pr").innerHTML=f(tot)+"<small> "+(d[0]>1?"pour "+d[0]+" mois":"/ mois")+"</small>";
+c.querySelector("a").href="https://wa.me/221781498148?text="+encodeURIComponent("Bonjour Sunu Marché, je veux l’abonnement "+n+" pour "+d[0]+" mois ("+f(tot)+").")})}
+document.getElementById("dur").onchange=upd;upd();
+})();
+</script>
+</body>
+</html>
