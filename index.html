@@ -842,3 +842,69 @@ if(user&&prof){var r=await db.from("stores").select("style").eq("id",user.id).ma
 if(r.data)document.getElementById("sty").value=r.data.style||"classique"}};
 })();
 </script>
+<script>
+(function(){
+if(window.__app)return;window.__app=1;
+var dash=document.getElementById("s-dash");if(!dash)return;
+var st=document.createElement("style");
+st.textContent=".kp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.kc{background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:14px}.kc b{display:block;font-size:1.3rem;margin-top:2px}.qa{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.qa button{background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:14px;text-align:left;font:inherit;color:var(--ink);cursor:pointer}.qa b{display:block}#abar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--sf);border-top:1px solid var(--ln);display:none;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom,0px))}#abar button{background:none;border:0;font:inherit;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.72rem;cursor:pointer;padding:2px 8px}#abar button span{font-size:1.3rem}#abar button.on{color:var(--in);font-weight:700}.lk{display:flex;gap:8px;align-items:center;background:var(--ln);border-radius:14px;padding:8px 10px;margin:10px 0}.lk code{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85rem}";
+document.head.appendChild(st);
+var app=document.createElement("div");app.id="app";
+var V={};["home","shop","prod","orders","plus"].forEach(function(k){var d=document.createElement("div");d.hidden=k!=="home";app.appendChild(d);V[k]=d});
+dash.insertBefore(app,dash.firstChild);
+function put(v,el){if(el)V[v].appendChild(el)}
+function pof(id){var e=document.getElementById(id);return e?(e.closest(".panel")||e):null}
+var WA="221781498148";
+V.home.innerHTML='<h2 id="ah" style="margin:6px 0 0"></h2><p class="m" id="ap"></p><div class="kp" id="ak"></div><div class="panel" style="max-width:none"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">Dernières commandes</h3><button class="btn o" data-go="orders" type="button">Tout voir</button></div><div id="alo"></div></div><div class="panel" style="max-width:none"><h3 style="margin:0">Partage ta boutique</h3><p class="m">Chaque partage peut devenir une commande.</p><div class="lk"><code id="als"></code><button class="btn" id="alc" type="button">Copier</button></div><a class="btn g" id="alw" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener">WhatsApp</a> <a class="btn o" id="alv" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener">Voir</a></div><div class="qa"><button type="button" data-go="prod" data-sc="pnm"><b>➕ Ajouter un produit</b><span class="m">Photo, prix, description</span></button><button type="button" data-go="prod" data-sc="dropbody"><b>📦 Trouver un produit</b><span class="m">Chez nos fournisseurs</span></button><button type="button" data-go="prod" data-sc="afl"><b>🖼️ Créer une affiche</b><span class="m">Pour WhatsApp et TikTok</span></button><button type="button" data-go="shop" data-sc="stn"><b>🎨 Personnaliser</b><span class="m">Nom, logo, style</span></button></div>';
+put("home",document.getElementById("gd"));
+put("shop",pof("stn"));
+var mh=[].slice.call(dash.querySelectorAll("h3")).filter(function(x){return x.textContent==="Mes produits"})[0];
+put("prod",mh);put("prod",document.getElementById("mine"));
+put("prod",pof("pnm"));put("prod",pof("auto"));put("prod",pof("dropbody"));put("prod",pof("afl"));
+put("orders",pof("odl"));put("orders",document.getElementById("an"));
+put("plus",document.getElementById("rt"));
+var pl=document.createElement("div");pl.className="panel";pl.style.maxWidth="none";
+pl.innerHTML='<h2 style="margin:0">Mon compte</h2><p class="m" id="apl"></p><a class="btn g" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/'+WA+'?text='+encodeURIComponent("Bonjour Sunu Marché, je veux changer d’abonnement.")+'">Changer d’abonnement</a><p><a href="/conditions.html">Conditions de vente</a></p><p><a target="_blank" rel="noopener" href="https://wa.me/'+WA+'">Accompagnement par WhatsApp</a></p>';
+put("plus",pl);
+var so=document.getElementById("so");put("plus",so?so.parentNode:null);
+var bar=document.createElement("div");bar.id="abar";
+bar.innerHTML=[["home","🏠","Accueil"],["shop","🏪","Boutique"],["prod","📦","Produits"],["orders","🧾","Commandes"],["plus","☰","Plus"]].map(function(x){return '<button type="button" data-go="'+x[0]+'"'+(x[0]==="home"?' class="on"':"")+'><span>'+x[1]+'</span>'+x[2]+'</button>'}).join("");
+document.body.appendChild(bar);
+function go(k,sc){
+Object.keys(V).forEach(function(n){V[n].hidden=n!==k});
+bar.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.dataset.go===k)});
+if(sc){var e=document.getElementById(sc);if(e)setTimeout(function(){e.scrollIntoView({behavior:"smooth",block:"center"})},60)}else window.scrollTo(0,0)}
+document.addEventListener("click",function(e){var b=e.target.closest("[data-go]");if(b)go(b.dataset.go,b.dataset.sc)});
+function vis(){var on=!document.getElementById("sell").hidden&&!dash.hidden;bar.style.display=on?"flex":"none";document.body.style.paddingBottom=on?"84px":""}
+var os=show;show=function(t){os(t);vis()};
+var NOM={free:"Gratuit",starter:"Starter",pro:"Pro",premium:"Premium"},link="";
+async function home(){
+if(!user||!prof)return;
+var r=await Promise.all([
+db.from("orders").select("id,buyer_name,total,status,created_at").eq("store_id",user.id).order("created_at",{ascending:false}).limit(200),
+db.from("products").select("id,status").eq("seller_id",user.id),
+db.from("stores").select("slug").eq("id",user.id).maybeSingle(),
+db.from("subscriptions").select("plan,expires_at").eq("user_id",user.id).maybeSingle()]);
+var L=r[0].data||[],P=r[1].data||[],S=r[2].data,sub=r[3].data;
+var act=L.filter(function(o){return o.status!=="cancelled"}),ca=0;act.forEach(function(o){ca+=Number(o.total)});
+var todo=L.filter(function(o){return o.status==="new"}).length;
+var ok=sub&&new Date(sub.expires_at)>new Date(),plan=ok?NOM[sub.plan]||sub.plan:"Gratuit";
+var until=ok?"jusqu’au "+new Date(sub.expires_at).toLocaleDateString("fr-FR"):"3 produits maximum";
+document.getElementById("ah").textContent="Bonjour, "+prof.shop_name;
+document.getElementById("ap").textContent=S?"Ta boutique est en ligne.":"Crée ta boutique dans l’onglet Boutique.";
+function card(t,v,s){return '<div class="kc"><span class="m">'+t+'</span><b>'+v+'</b><span class="m">'+s+'</span></div>'}
+document.getElementById("ak").innerHTML=card("Commandes",L.length,todo+" à traiter")+card("Ventes en ligne",fc(ca),"hors annulées")+card("Produits",P.filter(function(x){return x.status==="approved"}).length,"en vente sur "+P.length)+card("Abonnement",plan,until);
+document.getElementById("apl").textContent="Abonnement : "+plan+" · "+until;
+document.getElementById("alo").innerHTML=L.length?L.slice(0,3).map(function(o){return '<div class="ln"><div><b>'+esc(o.buyer_name)+'</b><span class="m">'+esc(new Date(o.created_at).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}))+'</span></div><b>'+fc(o.total)+'</b></div>'}).join(""):'<p class="m">Aucune commande pour l’instant. Partage ton lien pour en recevoir !</p>';
+link=S?location.origin+"/boutique.html?b="+S.slug:"";
+document.getElementById("als").textContent=link||"Crée d’abord ta boutique";
+document.getElementById("alw").href=link?"https://wa.me/?text="+encodeURIComponent("Découvre ma boutique : "+link):"#";
+document.getElementById("alv").href=link||"#"}
+document.getElementById("alc").onclick=async function(){
+if(!link)return;
+try{await navigator.clipboard.writeText(link);this.textContent="Copié !";var b=this;setTimeout(function(){b.textContent="Copier"},1500)}catch(e){}};
+var old=refresh;
+refresh=async function(){await old();vis();home()};
+vis();
+})();
+</script>
