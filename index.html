@@ -908,3 +908,61 @@ refresh=async function(){await old();vis();home()};
 vis();
 })();
 </script>
+<script>
+(function(){
+if(window.__pg)return;window.__pg=1;
+var CATS=["Mode","Beauté","Alimentation","Artisanat","Tech","Services","Maison","Auto","Santé","Enfants","Sport"];
+var app=document.getElementById("app"),pv=app?app.children[2]:document.getElementById("s-dash");
+if(!pv)return;
+var oh=[].slice.call(document.querySelectorAll("#s-dash h3")).filter(function(x){return x.textContent==="Mes produits"})[0];
+if(oh)oh.style.display="none";var mi=document.getElementById("mine");if(mi)mi.style.display="none";
+var P=document.createElement("div");P.id="pgp";
+P.innerHTML='<h2 style="margin:6px 0 0">Produits</h2><p class="m">Gère ton catalogue.</p><button class="btn g" id="pga" type="button" style="width:100%">+ Ajouter un produit</button><div id="pgf" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0"></div><div class="grid" id="pgg" style="grid-template-columns:1fr 1fr"></div><p class="m" id="pgm" role="alert"></p>';
+pv.insertBefore(P,pv.firstChild);
+var items=[],filt="all";
+var FL=[["all","Tous"],["in","En stock"],["low","Stock à remplir"]];
+var STL={pending:"En attente",approved:"Publié",rejected:"Refusé"};
+function isIn(x){return x.kind==="dropship"||(x.stock!=null&&x.stock>0)}
+function draw(){
+var l=items.filter(function(x){return filt==="all"||(filt==="in"?isIn(x):!isIn(x))});
+document.getElementById("pgf").innerHTML=FL.map(function(f){return '<button type="button" class="btn '+(filt===f[0]?"g":"o")+'" data-f="'+f[0]+'" style="padding:8px 14px;font-size:.9rem">'+f[1]+'</button>'}).join("");
+document.getElementById("pgg").innerHTML=l.length?l.map(function(x){
+var s=x.kind==="dropship"?"Livré par le fournisseur":(x.stock==null?"Stock non renseigné":"Stock : "+x.stock);
+return '<article class="card"><div class="pic" style="height:140px">'+(x.image_url?'<img src="'+esc(x.image_url)+'" alt="">':esc(x.emoji||"🎁"))+'</div><div class="bd"><b>'+esc(x.name)+'</b><span class="price">'+fc(x.price)+'</span><span class="m">'+s+'</span><span><span class="st">'+(STL[x.status]||esc(x.status))+'</span></span><div style="display:flex;gap:6px;margin-top:8px"><button class="btn o" type="button" data-e="'+esc(x.id)+'" style="flex:1;padding:8px 6px;font-size:.85rem">✏️ Modifier</button><button class="btn o" type="button" data-d="'+esc(x.id)+'" style="flex:1;padding:8px 6px;font-size:.85rem">🗑️ Supprimer</button></div></div></article>'}).join(""):'<p class="m" style="grid-column:1/-1">Aucun produit dans cette liste.</p>'}
+async function loadG(){
+if(!user||!prof)return;
+var r=await db.from("products").select("*").eq("seller_id",user.id).order("created_at",{ascending:false});
+items=r.data||[];draw()}
+document.getElementById("pgf").onclick=function(e){var b=e.target.closest("[data-f]");if(b){filt=b.dataset.f;draw()}};
+document.getElementById("pga").onclick=function(){var e=document.getElementById("pnm");if(e){e.scrollIntoView({behavior:"smooth",block:"center"});try{e.focus({preventScroll:true})}catch(x){}}};
+function edit(x){
+var dd=x.kind==="dropship",o=document.createElement("div");
+o.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,22,43,.55);z-index:60;overflow:auto;padding:16px";
+var cs=CATS.indexOf(x.category)<0?CATS.concat([x.category]):CATS;
+o.innerHTML='<div class="panel" style="margin:0 auto"><h2 style="margin:0">Modifier le produit</h2>'+(x.status==="approved"?'<p class="m">Si tu changes le nom, la description, la photo ou la catégorie, le produit repasse en validation. Le prix et le stock restent immédiats.</p>':"")+'<label for="ed1">Nom</label><input id="ed1" value="'+esc(x.name)+'"><label for="ed2">Prix (FCFA)</label><input id="ed2" type="number" inputmode="numeric" value="'+esc(x.price)+'">'+(dd?'<p class="m">Prix fournisseur : '+fc(x.supplier_price)+'. Ton prix doit le dépasser.</p>':'<label for="ed3">Stock</label><input id="ed3" type="number" inputmode="numeric" min="0" value="'+(x.stock==null?"":esc(x.stock))+'">')+'<label for="ed4">Catégorie</label><select id="ed4">'+cs.map(function(c){return '<option'+(c===x.category?" selected":"")+'>'+esc(c)+'</option>'}).join("")+'</select><label for="ed5">Description</label><textarea id="ed5" rows="4">'+esc(x.description)+'</textarea><label for="ed6">Nouvelle photo (facultatif)</label><input id="ed6" type="file" accept="image/*"><p class="m" id="edm" role="alert"></p><button class="btn g" id="eds" type="button">Enregistrer</button> <button class="btn o" id="edc" type="button">Annuler</button></div>';
+document.body.appendChild(o);
+function q(i){return o.querySelector("#"+i)}
+q("edc").onclick=function(){o.remove()};
+q("eds").onclick=async function(){
+var n=q("ed1").value.trim(),p=Number(q("ed2").value);
+if(!n||!(p>0))return msg("edm","Nom et prix requis.");
+var row={name:n,price:p,category:q("ed4").value,description:q("ed5").value.trim()};
+if(!dd){var s=q("ed3").value.trim();row.stock=s===""?null:Math.max(0,parseInt(s,10)||0)}
+var f=q("ed6").files[0],b=this;b.disabled=true;
+if(f){try{var bl=await resize(f);if(bl.size>1000000)throw 0;var path=user.id+"/"+Date.now()+".jpg";var up=await db.storage.from("product-images").upload(path,bl,{contentType:"image/jpeg"});if(up.error)throw 0;row.image_url=db.storage.from("product-images").getPublicUrl(path).data.publicUrl}catch(e){b.disabled=false;return msg("edm","Photo impossible à envoyer. Essaie une autre image.")}}
+var r=await db.from("products").update(row).eq("id",x.id);
+b.disabled=false;
+if(r.error)return msg("edm",dd&&/dropship_price_ok/.test(r.error.message)?"Ton prix doit dépasser le prix fournisseur.":"Enregistrement impossible.");
+o.remove();loadG();try{load()}catch(e){}}}
+document.getElementById("pgg").onclick=async function(e){
+var be=e.target.closest("[data-e]"),bd=e.target.closest("[data-d]");
+if(be){var x=items.find(function(i){return String(i.id)===be.dataset.e});if(x)edit(x)}
+if(bd){var y=items.find(function(i){return String(i.id)===bd.dataset.d});
+if(y&&confirm("Supprimer « "+y.name+" » ? Cette action est définitive.")){
+var r=await db.from("products").delete().eq("id",y.id);
+if(r.error){msg("pgm","Suppression impossible. Réessaie.");return}
+msg("pgm","Produit supprimé.",1);loadG();try{load()}catch(x2){}}}};
+var oldR=refresh;refresh=async function(){await oldR();loadG()};
+var oldM=myProducts;myProducts=async function(){await oldM();loadG()};
+})();
+</script>
