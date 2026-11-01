@@ -966,3 +966,24 @@ var oldR=refresh;refresh=async function(){await oldR();loadG()};
 var oldM=myProducts;myProducts=async function(){await oldM();loadG()};
 })();
 </script>
+<script>
+(function(){
+if(window.__pv)return;window.__pv=1;
+var app=document.getElementById("app");if(!app)return;
+var shop=app.children[1];if(!shop)return;
+var p=document.createElement("div");p.className="panel";p.style.maxWidth="none";p.style.textAlign="center";
+p.innerHTML='<h2 style="margin:0 0 4px">Aperçu de ta boutique</h2><p class="m">Voilà ce que voient tes clients.</p><div id="pvw" style="width:280px;height:540px;margin:14px auto;border:10px solid #14162B;border-radius:38px;overflow:hidden;background:#fff"></div><button class="btn o" id="pvr" type="button">Actualiser</button> <a class="btn g" id="pvo" style="display:inline-block;text-decoration:none" target="_blank" rel="noopener">Ouvrir</a>';
+shop.insertBefore(p,shop.firstChild);
+async function pv(){
+if(!user||!prof)return;
+var r=await db.from("stores").select("slug").eq("id",user.id).maybeSingle();
+var w=document.getElementById("pvw"),o=document.getElementById("pvo");
+if(!r.data){w.innerHTML='<p class="m" style="padding:40px 16px">Enregistre ta boutique pour voir l’aperçu.</p>';o.style.display="none";return}
+var u=location.origin+"/boutique.html?b="+encodeURIComponent(r.data.slug);
+o.href=u;o.style.display="inline-block";
+w.innerHTML='<iframe title="Aperçu de la boutique" src="'+u+"&t="+Date.now()+'" style="width:390px;height:780px;border:0;transform:scale(.6667);transform-origin:0 0"></iframe>'}
+document.getElementById("pvr").onclick=pv;
+var old=refresh;
+refresh=async function(){await old();pv()};
+})();
+</script>
