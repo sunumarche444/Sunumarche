@@ -150,3 +150,15 @@ var s=document.createElement("style");s.textContent=c;document.head.appendChild(
 setTimeout(function(){clearInterval(t)},10000);
 })();
 </script>
+<script>
+(function(){
+if(window.__vt)return;window.__vt=1;
+var vid="";
+try{vid=localStorage.getItem("sm_v");if(!vid){vid=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Math.random()).slice(2)+String(Date.now());localStorage.setItem("sm_v",vid)}}catch(e){vid=String(Math.random()).slice(2)+String(Date.now())}
+var t=setInterval(function(){
+if(typeof store==="undefined"||!store)return;
+clearInterval(t);
+db.rpc("track_visit",{p_store:store.id,p_visitor:vid}).then(function(){},function(){})},300);
+setTimeout(function(){clearInterval(t)},10000);
+})();
+</script>
