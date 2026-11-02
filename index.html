@@ -1009,3 +1009,59 @@ var old=refresh;
 refresh=async function(){await old();load()};
 })();
 </script>
+<script>
+(function(){
+if(window.__pm)return;window.__pm=1;
+var bar=document.getElementById("abar");if(!bar)return;
+var btn=bar.querySelector('[data-go="plus"]');if(!btn)return;
+var root=document.documentElement;
+var st=document.createElement("style");
+st.textContent="html.dk{--bg:#0E1022;--sf:#181B35;--ink:#F1F2FA;--mu:#A3A8C8;--in:#8E9BFF;--ln:#2B2F55;--oi:#0E1022}html.lt{--bg:#F6F7FB;--sf:#fff;--ink:#14162B;--mu:#5B607A;--in:#1F2A6B;--ln:#DADDEA;--oi:#fff}#pmo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(20,22,43,.5);z-index:70;display:none}#pms{position:fixed;left:0;right:0;bottom:0;max-height:78vh;overflow:auto;background:var(--sf);border-radius:26px 26px 0 0;padding:10px 12px calc(16px + env(safe-area-inset-bottom,0px));z-index:71;display:none}#pms .it{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-radius:14px;padding:13px 12px;font:inherit;color:var(--ink);text-align:left;text-decoration:none;cursor:pointer}#pms .it:active{background:var(--ln)}#pms .it i{font-style:normal;width:26px;text-align:center;font-size:1.2rem}#pms .it small{margin-left:auto;color:var(--mu);font-size:.75rem}#pms hr{border:0;border-top:1px solid var(--ln);margin:8px 0}#pmt{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;background:#14162B;color:#fff;padding:10px 16px;border-radius:99px;z-index:80;display:none;font-size:.9rem}";
+document.head.appendChild(st);
+function dark(){return root.classList.contains("dk")||(!root.classList.contains("lt")&&window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
+function setTheme(t){root.classList.remove("dk","lt");if(t)root.classList.add(t);try{localStorage.setItem("sm_theme",t||"")}catch(e){}}
+var saved=null;try{saved=localStorage.getItem("sm_theme")}catch(e){}
+if(saved)setTheme(saved);
+var WA="https://wa.me/221781498148?text="+encodeURIComponent("Bonjour Sunu Marché, j’ai besoin d’aide pour ma boutique.");
+var IT=[
+["a","🎓","Accompagnement",WA],
+["go","🧾","Commandes","orders"],
+["go","📦","Fournisseurs","prod","dropbody"],
+["go","🎨","Personnaliser la boutique","shop","stn"],
+["soon","🚚","Livraison"],
+["soon","💳","Ventes en magasin"],
+["go","📄","Factures","orders","odl"],
+["go","📈","Bénéfices","orders","an"],
+["go","📊","Statistiques","home"],
+"-",
+["go","⚡","Abonnement","plus","apl"],
+["go","⚙️","Paramètres","plus"],
+["theme","🌙","Thème sombre"],
+["out","🚪","Me déconnecter"]
+];
+var o=document.createElement("div");o.id="pmo";
+var s=document.createElement("div");s.id="pms";
+var t=document.createElement("div");t.id="pmt";t.textContent="Bientôt disponible";
+s.innerHTML=IT.map(function(x){
+if(x==="-")return "<hr>";
+var h='<i>'+x[1]+'</i><span>'+x[2]+'</span>';
+if(x[0]==="a")return '<a class="it" target="_blank" rel="noopener" href="'+x[3]+'">'+h+'</a>';
+if(x[0]==="go")return '<button class="it" type="button" data-go="'+x[3]+'"'+(x[4]?' data-sc="'+x[4]+'"':"")+'>'+h+'</button>';
+if(x[0]==="soon")return '<button class="it" type="button" data-soon="1">'+h+'<small>Bientôt</small></button>';
+if(x[0]==="theme")return '<button class="it" type="button" data-theme="1">'+h+'</button>';
+return '<button class="it" type="button" data-out="1">'+h+'</button>'}).join("");
+document.body.appendChild(o);document.body.appendChild(s);document.body.appendChild(t);
+function lab(){var l=s.querySelector("[data-theme] span"),i=s.querySelector("[data-theme] i");if(dark()){l.textContent="Thème clair";i.textContent="☀️"}else{l.textContent="Thème sombre";i.textContent="🌙"}}
+function open(){lab();o.style.display="block";s.style.display="block"}
+function close(){o.style.display="none";s.style.display="none"}
+btn.removeAttribute("data-go");
+btn.addEventListener("click",function(e){e.preventDefault();open()});
+o.addEventListener("click",close);
+s.addEventListener("click",function(e){
+var b=e.target.closest(".it");if(!b)return;
+if(b.dataset.soon){t.style.display="block";setTimeout(function(){t.style.display="none"},1800);return}
+if(b.dataset.theme){setTheme(dark()?"lt":"dk");close();return}
+if(b.dataset.out){close();var so=document.getElementById("so");if(so)so.click();return}
+close()});
+})();
+</script>
