@@ -1065,3 +1065,51 @@ if(b.dataset.out){close();var so=document.getElementById("so");if(so)so.click();
 close()});
 })();
 </script>
+<script>
+(function(){
+if(window.__acc)return;window.__acc=1;
+var st=document.createElement("style");
+st.textContent="#accv{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);color:var(--ink);z-index:90;overflow:auto;display:none}#accv .in{max-width:640px;margin:auto;padding:0 16px 40px}#accv .hd{position:sticky;top:0;background:var(--bg);padding:14px 0;display:flex;align-items:center;gap:10px;z-index:2}#accv .hd b{font-size:1.2rem}#accv details{background:var(--sf);border:1px solid var(--ln);border-radius:18px;padding:14px 16px;margin:0 0 10px}#accv summary{font-weight:700;cursor:pointer}#accv ol,#accv ul{padding-left:20px;margin:10px 0 0}#accv li{margin:6px 0}#accv .tip{background:var(--ln);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:.92rem}#accv .mg{border:1px solid var(--ln);border-radius:12px;padding:10px 12px;margin-top:10px;white-space:pre-wrap;font-size:.92rem}#accv .mg+button{margin-top:6px}";
+document.head.appendChild(st);
+var v=document.createElement("div");v.id="accv";document.body.appendChild(v);
+var cur=[];
+var SEC=[
+["1. Tes premières ventes, étape par étape",'<ol><li>Crée ta boutique et ajoute ton logo.</li><li>Ajoute <b>3 produits</b> avec de bonnes photos.</li><li>Active tes alertes Telegram pour ne rater aucune commande.</li><li>Partage ton lien en statut WhatsApp et à tes proches.</li><li>Réponds vite : une réponse dans l’heure fait souvent la différence.</li><li>Livre bien, puis demande à tes premiers clients de parler de toi.</li></ol><div class="tip">Ne cherche pas la perfection. Mets ta boutique en ligne, puis améliore-la avec les retours de tes premiers clients.</div>'],
+["2. Ajouter un produit qui donne envie",'<ul><li><b>Photos</b> : bonne lumière, fond simple, produit bien au centre. Ajoute 2 ou 3 photos si possible.</li><li><b>Nom</b> : clair et précis (par exemple « Sac en wax fait main »).</li><li><b>Description</b> : à quoi ça sert, la taille ou la matière, le délai de livraison. Écris la vérité.</li><li><b>Prix</b> : compte ton achat, ta livraison et ta marge avant de fixer le prix.</li></ul><div class="tip">Dans l’onglet Produits, « + Ajouter un produit » ou « Boutique automatique » t’aident à démarrer.</div>'],
+["3. Fournisseurs et dropshipping",'<ul><li><b>Dropshipping</b> : tu vends un produit que ton fournisseur stocke et livre à ton client. Tu gardes la marge entre son prix et le tien.</li><li><b>Local</b> : livraison plus rapide, plus simple à vérifier.</li><li><b>International</b> : prix souvent bas, mais délai long (10 à 30 jours), risque de retard ou de douane.</li></ul><div class="tip"><b>Avant de publier</b> : demande au fournisseur le délai réel, fais une commande de test, et mets le vrai délai dans ta description. Un client prévenu ne se plaint pas.</div>'],
+["4. Quel produit vendre ?",'<ul><li>Un produit qui <b>règle un vrai problème</b> ou fait plaisir.</li><li>Simple à expédier : pas trop fragile, pas trop lourd.</li><li>Avec une <b>marge suffisante</b> pour couvrir livraison et imprévus.</li><li>Que tu peux <b>montrer en vidéo</b> en quelques secondes.</li></ul><div class="tip">Teste 3 produits à la fois, regarde lequel intéresse le plus, puis mets-le en avant.</div>'],
+["5. Recevoir tes paiements",'<ol><li>Le client commande et choisit Wave ou Orange Money.</li><li>Il t’envoie le montant, puis confirme sur WhatsApp.</li><li><b>Vérifie que l’argent est bien arrivé</b> sur ton compte avant de livrer (sauf paiement à la livraison).</li><li>Passe la commande en « Confirmée », puis « Expédiée » et « Livrée ».</li></ol><div class="tip">Garde les preuves de paiement. Ne donne jamais ton code secret à personne.</div>'],
+["6. Ramener des clients gratuitement",'<ul><li>Publie ton lien dans ton <b>statut WhatsApp</b>, chaque jour avec un produit différent.</li><li>Envoie ton lien à tes contacts <b>qui peuvent être intéressés</b>, sans spammer.</li><li>Dans l’onglet Produits, crée une <b>affiche</b> et partage-la sur TikTok et Instagram.</li><li>Ajoute ton lien dans ta bio.</li><li>Demande à tes clients satisfaits de te recommander.</li></ul>'],
+["7. Messages prêts à copier",'<div id="accm"></div>'],
+["8. Suivre tes commandes et livrer",'<ul><li>Chaque commande arrive dans <b>Commandes</b> (et sur Telegram).</li><li>Utilise « Appeler » ou « WhatsApp » pour confirmer l’adresse.</li><li>Change le <b>statut</b> à chaque étape pour t’y retrouver.</li><li>Génère la <b>facture</b> du client avec le bouton « Facture ».</li></ul>'],
+["9. Passer à la publicité payante",'<ul><li>Pas au début. D’abord, vends avec le <b>gratuit</b>.</li><li>Quand un produit se vend déjà, teste avec un <b>très petit budget</b>.</li><li>Ne dépense pas d’argent que tu ne peux pas perdre : aucune pub ne garantit des ventes.</li><li>Regarde ce que chaque vente te rapporte <b>après</b> la pub (onglet Bénéfices).</li></ul>'],
+["10. Tes vidéos, et rester honnête",'<ul><li>Une vidéo de <b>15 à 30 secondes</b> avec ton téléphone : le produit en main, un bénéfice, ton lien.</li><li>Il existe des outils d’IA pour monter des vidéos. Vérifie leurs prix et leurs conditions avant de payer.</li></ul><div class="tip"><b>Reste honnête</b> : pas de faux avis, pas de faux « il ne reste que 2 pièces », pas de fausses promotions. Ça abîme ta réputation et peut te poser des problèmes.</div>']
+];
+function M(nom,l){var k=l||"(ton lien)";return [
+["Annoncer ta boutique (statut)","🛍️ Ma boutique est ouverte ! Découvre "+nom+" : "+k+"\nLivraison, paiement par Wave, Orange Money ou à la livraison. Écris-moi pour toute question 👇"],
+["Répondre à un client intéressé","Bonjour 👋 Merci de ton intérêt ! Voici le produit : "+k+"\nTu peux commander directement sur la page. Je reste disponible pour toute question."],
+["Confirmer une commande","Bonjour, ta commande est bien reçue ✅ Je te confirme la livraison très vite. Merci de ta confiance !"],
+["Relancer doucement","Bonjour, as-tu des questions sur le produit ? Je peux t’aider à choisir 🙂 "+k]]}
+function render(nom,lien){
+cur=M(nom,lien);
+v.innerHTML='<div class="in"><div class="hd"><button class="btn o" id="accb" type="button" style="padding:8px 14px">← Retour</button><b>Accompagnement</b></div><p class="m" style="margin:0 0 14px">Ton guide pour réussir tes premières ventes.</p>'+
+SEC.map(function(s,i){return '<details'+(i===0?" open":"")+'><summary>'+s[0]+'</summary>'+s[1]+'</details>'}).join("")+
+'<a class="btn g" style="display:block;text-align:center;text-decoration:none;margin-top:14px" target="_blank" rel="noopener" href="https://wa.me/221781498148?text='+encodeURIComponent("Bonjour Sunu Marché, j’ai une question sur ma boutique.")+'">Poser ma question sur WhatsApp</a></div>';
+v.querySelector("#accm").innerHTML=cur.map(function(x,i){return '<b>'+esc(x[0])+'</b><div class="mg">'+esc(x[1])+'</div><button class="btn o" type="button" data-c="'+i+'" style="padding:8px 14px;font-size:.9rem">Copier ce message</button>'}).join('<hr style="border:0;border-top:1px solid var(--ln);margin:12px 0">');
+v.querySelector("#accb").onclick=close}
+v.addEventListener("click",async function(e){var b=e.target.closest("[data-c]");if(!b)return;
+try{await navigator.clipboard.writeText(cur[b.dataset.c][1]);b.textContent="Copié !";setTimeout(function(){b.textContent="Copier ce message"},1500)}catch(x){b.textContent="Copie impossible"}});
+async function open(){
+var nom=prof?prof.shop_name:"ma boutique",lien="";
+try{var r=await db.from("stores").select("slug,name").eq("id",user.id).maybeSingle();if(r.data){nom=r.data.name;lien=location.origin+"/boutique.html?b="+r.data.slug}}catch(e){}
+render(nom,lien);v.style.display="block";document.body.style.overflow="hidden";v.scrollTop=0}
+function close(){v.style.display="none";document.body.style.overflow=""}
+document.addEventListener("click",function(e){
+var a=e.target.closest("#pms a.it");
+if(a&&/Accompagnement/.test(a.textContent)){
+e.preventDefault();e.stopPropagation();
+var o=document.getElementById("pmo"),s=document.getElementById("pms");
+if(o)o.style.display="none";if(s)s.style.display="none";
+open()}},true);
+})();
+</script>
