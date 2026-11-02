@@ -987,3 +987,25 @@ var old=refresh;
 refresh=async function(){await old();pv()};
 })();
 </script>
+<script>
+(function(){
+if(window.__vs)return;window.__vs=1;
+var v=null;
+function add(){
+var k=document.getElementById("ak");
+if(!k||!v||k.querySelector(".vc"))return;
+var d=document.createElement("div");d.className="kc vc";
+d.innerHTML='<span class="m">Visites (7 j)</span><b>'+esc(v.week)+'</b><span class="m">'+esc(v.total)+' au total</span>';
+k.insertBefore(d,k.firstChild)}
+var host=document.getElementById("ak");
+if(host)new MutationObserver(add).observe(host,{childList:true});
+async function load(){
+if(!user||!prof)return;
+var r=await db.rpc("my_visit_stats");
+var row=r.data&&r.data[0];
+v={week:row?Number(row.week):0,total:row?Number(row.total):0};
+add()}
+var old=refresh;
+refresh=async function(){await old();load()};
+})();
+</script>
