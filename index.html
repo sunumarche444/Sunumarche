@@ -1113,3 +1113,36 @@ if(o)o.style.display="none";if(s)s.style.display="none";
 open()}},true);
 })();
 </script>
+<script>
+(function(){
+if(window.__dl)return;window.__dl=1;
+var app=document.getElementById("app");if(!app)return;
+var shop=app.children[1];if(!shop)return;
+var p=document.createElement("div");p.className="panel";p.id="dlp";p.style.maxWidth="none";
+p.innerHTML='<h2 style="margin:0">Livraison</h2><p class="m">Tes zones, prix et délais. Tes clients choisissent leur zone en commandant sur ta boutique.</p><div id="dll"></div><label for="dln">Zone (par exemple Dakar)</label><input id="dln"><label for="dlf">Prix de livraison (FCFA, 0 si gratuit)</label><input id="dlf" type="number" inputmode="numeric" min="0"><label for="dld">Délai (par exemple 24 à 48 h)</label><input id="dld"><p class="m" id="dlm" role="alert"></p><button class="btn g" id="dla" type="button">Ajouter cette zone</button>';
+shop.appendChild(p);
+async function load(){
+if(!user||!prof)return;
+var r=await db.from("delivery_zones").select("*").eq("store_id",user.id).order("id");
+var Z=r.data||[];
+document.getElementById("dll").innerHTML=Z.length?Z.map(function(z){return '<div class="ln"><div><b>'+esc(z.name)+'</b><span class="m">'+(z.fee>0?fc(z.fee):"Gratuit")+(z.delay?" · "+esc(z.delay):"")+'</span></div><button class="btn o" type="button" data-z="'+esc(z.id)+'" style="padding:8px 12px">Supprimer</button></div>'}).join(""):'<p class="m">Aucune zone pour l’instant. Sans zone, tes clients commandent sans frais de livraison.</p>'}
+document.getElementById("dla").onclick=async function(){
+var n=document.getElementById("dln").value.trim(),f=Number(document.getElementById("dlf").value),d=document.getElementById("dld").value.trim();
+if(n.length<2)return msg("dlm","Écris le nom de la zone.");
+if(!(f>=0))return msg("dlm","Écris le prix (0 si c’est gratuit).");
+var r=await db.from("delivery_zones").insert({store_id:user.id,name:n,fee:Math.round(f),delay:d||null});
+if(r.error)return msg("dlm",r.error.code==="23503"?"Enregistre d’abord ta boutique.":"Ajout impossible. Réessaie.");
+["dln","dlf","dld"].forEach(function(i){document.getElementById(i).value=""});
+msg("dlm","Zone ajoutée !",1);load()};
+document.getElementById("dll").onclick=async function(e){
+var b=e.target.closest("[data-z]");if(!b)return;
+if(!confirm("Supprimer cette zone ?"))return;
+var r=await db.from("delivery_zones").delete().eq("id",b.dataset.z);
+if(r.error)return msg("dlm","Suppression impossible.");
+load()};
+var it=[].slice.call(document.querySelectorAll("#pms .it")).filter(function(b){return /Livraison/.test(b.textContent)})[0];
+if(it){it.removeAttribute("data-soon");it.dataset.go="shop";it.dataset.sc="dlp";var sm=it.querySelector("small");if(sm)sm.remove()}
+var old=refresh;
+refresh=async function(){await old();load()};
+})();
+</script>
