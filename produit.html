@@ -161,4 +161,46 @@ db.rpc("track_visit",{p_store:store.id,p_visitor:vid}).then(function(){},functio
 setTimeout(function(){clearInterval(t)},10000);
 })();
 </script>
+<script>
+(function(){
+if(window.__zn)return;window.__zn=1;
+var Z=[],fee=0,zoneName=null;
+function upd(){
+if(typeof prod==="undefined"||!prod)return;
+$("tot").textContent=fc(prod.price*qty()+fee);
+var n=document.getElementById("znote");
+if(n)n.textContent=zoneName?"Dont livraison ("+zoneName+") : "+(fee>0?fc(fee):"gratuite"):""}
+var ot=total;total=function(){ot();upd()};
+var t=setInterval(async function(){
+if(document.getElementById("pg").hidden)return;
+clearInterval(t);
+if(typeof store==="undefined"||!store)return;
+var r=await db.from("delivery_zones").select("*").eq("store_id",store.id).order("id");
+Z=r.data||[];if(!Z.length)return;
+var lab=document.querySelector("label[for=pay]");
+var w=document.createElement("div");
+w.innerHTML='<label for="zn">Zone de livraison</label><select id="zn"><option value="">Choisis ta zone</option>'+Z.map(function(z){return '<option value="'+esc(z.id)+'">'+esc(z.name)+" · "+(z.fee>0?fc(z.fee):"gratuit")+(z.delay?" · "+esc(z.delay):"")+'</option>'}).join("")+'</select><p class="m" id="znote"></p>';
+lab.parentNode.insertBefore(w,lab);
+document.getElementById("zn").onchange=function(){
+var v=this.value,z=Z.find(function(i){return String(i.id)===v});
+fee=z?z.fee:0;zoneName=z?z.name:null;upd()};
+upd()},300);
+setTimeout(function(){clearInterval(t)},10000);
+$("go").onclick=async function(){
+var nm=$("bn").value.trim(),ph=$("bp").value.trim(),ad=$("ba").value.trim();
+if(!nm||!ph||!ad){$("cm").textContent="Remplis ton nom, ton téléphone et ton adresse.";return}
+if(Z.length&&!zoneName){$("cm").textContent="Choisis ta zone de livraison.";return}
+var n=qty(),tot=prod.price*n+fee,pay=$("pay").value;this.disabled=true;
+var row={buyer_name:nm,buyer_phone:ph,address:ad,payment:pay,items:[{id:prod.id,name:prod.name,qty:n,price:prod.price}],total:tot};
+if(store)row.store_id=store.id;
+if(zoneName){row.delivery_zone=zoneName;row.delivery_fee=fee}
+var r=await db.from("orders").insert(row);
+this.disabled=false;
+if(r.error){$("cm").textContent="Commande impossible. Réessaie dans un instant.";return}
+$("cm").textContent="";
+var m="Bonjour, je viens de commander "+n+" × "+prod.name+(store?" ("+store.name+")":"")+(zoneName?". Livraison "+zoneName+" : "+(fee>0?fc(fee):"gratuite"):"")+". Total : "+fc(tot)+". Adresse : "+ad+". Paiement : "+pay+". Nom : "+nm+", tél : "+ph;
+var num=pay==="Wave"?WAVE:OM;
+$("done").innerHTML='<div class="ok"><b>Commande enregistrée, merci '+esc(nm)+' !</b><br>'+(pay==="Paiement à la livraison"?"Tu paieras à la réception.":"Envoie "+fc(tot)+" par "+esc(pay)+" au "+esc(num)+".")+' Puis confirme sur WhatsApp.</div><a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="https://wa.me/'+WA+'?text='+encodeURIComponent(m)+'">Confirmer sur WhatsApp</a>'};
+})();
+</script>
 
